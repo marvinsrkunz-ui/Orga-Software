@@ -5,11 +5,404 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beerpong Liga</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍺</text></svg>" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f4f0; --surface: #ffffff; --border: #e2e0d8; --border2: #cccac0;
+      --text: #1a1917; --muted: #6b6960; --faint: #9b9890;
+      --blue: #3a6fd8; --blue-bg: #eef2fc; --blue-text: #1e3f80;
+      --green: #2a7a4b; --green-bg: #e8f5ee; --green-text: #164d2e;
+      --gray-bg: #f0ede6; --gray-text: #4a4843;
+      --radius: 8px; --radius-lg: 12px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.6; color: var(--text); background: var(--bg); min-height: 100vh; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; padding: 0 24px; height: 56px; }
+    .topbar-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; white-space: nowrap; }
+    .brand-icon { font-size: 20px; }
+    .topbar-nav { display: flex; gap: 2px; flex: 1; }
+    .nav-btn { padding: 6px 14px; border: none; background: none; cursor: pointer; font-size: 14px; font-family: inherit; color: var(--muted); border-radius: var(--radius); border-bottom: 2px solid transparent; transition: color .15s, background .15s; }
+    .nav-btn:hover { color: var(--text); background: var(--bg); }
+    .nav-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .topbar-user { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .user-name { font-size: 13px; color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text); font-size: 14px; font-family: inherit; cursor: pointer; transition: background .15s; }
+    .btn:hover { background: var(--bg); }
+    .btn:active { transform: scale(.98); }
+    .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .btn-primary:hover { background: #2d5ab5; border-color: #2d5ab5; }
+    .btn-ghost { border-color: transparent; background: transparent; }
+    .btn-ghost:hover { background: var(--bg); border-color: var(--border); }
+    .btn-sm { padding: 5px 10px; font-size: 13px; }
+    .btn-full { width: 100%; justify-content: center; }
+    .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem 2rem; width: 360px; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .login-logo { font-size: 48px; text-align: center; margin-bottom: 8px; }
+    .login-title { font-size: 22px; font-weight: 600; text-align: center; }
+    .login-sub { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 20px; }
+    .role-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .role-btn { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 12px; border: 2px solid var(--border); border-radius: var(--radius-lg); background: var(--bg); cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s; }
+    .role-btn:hover { border-color: var(--blue); background: var(--blue-bg); }
+    .role-btn.role-active { border-color: var(--blue); background: var(--blue-bg); }
+    .role-icon { font-size: 32px; }
+    .role-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .content { max-width: 860px; margin: 0 auto; padding: 24px 24px 60px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .card-desc { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    .field-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .field-row label { font-size: 13px; color: var(--muted); min-width: 160px; }
+    input, select { padding: 8px 11px; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text); width: 220px; transition: border-color .15s; }
+    input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(58,111,216,.12); }
+    input[type=date], input[type=time] { width: 170px; }
+    .err-msg { color: #c0392b; font-size: 13px; margin-bottom: 10px; }
+    .notice { background: #fef9ec; border: 1px solid #f0d060; border-radius: var(--radius); padding: 10px 14px; font-size: 13px; color: #7a5c00; margin: 10px 0 14px; }
+    .pw-display { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); min-width: 160px; }
+    .pw-value { font-family: monospace; font-size: 15px; font-weight: 600; color: var(--blue); letter-spacing: 1px; }
+    .pw-empty { font-size: 13px; color: var(--faint); font-style: italic; }
+    .prio-list { display: flex; flex-direction: column; gap: 6px; }
+    .prio-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: grab; user-select: none; }
+    .prio-row:hover { border-color: var(--border2); }
+    .prio-handle { font-size: 16px; color: var(--faint); }
+    .prio-label { flex: 1; font-size: 14px; }
+    .prio-rank { font-size: 12px; color: var(--faint); }
+    .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 560px) { .teams-grid { grid-template-columns: 1fr; } }
+    .team-col { background: var(--bg); border-radius: var(--radius); padding: 14px; border: 1px solid var(--border); }
+    .team-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .team-header input { width: 100%; min-width: 0; flex: 1; }
+    .player-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .player-row input { width: 100%; min-width: 0; flex: 1; }
+    .player-num { font-size: 12px; color: var(--muted); min-width: 18px; text-align: right; }
+    .double-block { margin-bottom: 12px; }
+    .double-label { margin-bottom: 4px; }
+    .double-inputs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .double-inputs input { flex: 1; min-width: 100px; width: auto; }
+    .tag { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .tag-blue  { background: var(--blue-bg);  color: var(--blue-text); }
+    .tag-green { background: var(--green-bg); color: var(--green-text); }
+    .tag-gray  { background: var(--gray-bg);  color: var(--gray-text); }
+    .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin: 12px 0; }
+    .day-tile { border-radius: var(--radius); padding: 10px 6px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: transform .1s; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .day-tile:hover { transform: scale(1.04); }
+    .day-avail { background: var(--green-bg); border-color: #9ad4b3; color: var(--green-text); }
+    .day-sel   { background: var(--blue); color: #fff; border-color: #2d5ab5; }
+    .day-wd { font-size: 11px; opacity: .8; }
+    .day-dt { font-size: 13px; font-weight: 600; }
+    .days-count { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .match-list { display: flex; flex-direction: column; gap: 2px; }
+    .match-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .match-row:last-child { border-bottom: none; }
+    .match-players { flex: 1; font-size: 13px; min-width: 120px; }
+    .match-players em { color: var(--faint); font-style: normal; margin: 0 4px; }
+    .match-select { width: 150px; }
+    .day-block { margin-bottom: 20px; }
+    .day-block-header { font-size: 14px; font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+    .match-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .match-table th { text-align: left; padding: 8px 10px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .match-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+    .match-table tr:last-child td { border-bottom: none; }
+    .vs-cell { text-align: center; color: var(--faint); }
+    .date-cell { white-space: nowrap; color: var(--muted); }
+    .empty-state { color: var(--muted); font-size: 14px; padding: 12px 0; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1a1917; color: #fff; padding: 10px 18px; border-radius: var(--radius); font-size: 13px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 999; }
+    .toast-err { background: #c0392b; }
+    .loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; font-size: 14px; color: var(--muted); gap: 10px; }
+  </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root"><div class="loading">🍺 Verbinde mit Firebase…</div></div>
   <div class="toast" id="toast"></div>
-  <script type="module" src="app.js"></script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ── Firebase config ──────────────────────────────────────────
+    const firebaseConfig = {
+      apiKey:            "AIzaSyD9ShOUkjQvxrnUnkDm6AURHwxgzwUvL2A",
+      authDomain:        "projekt-704cf.firebaseapp.com",
+      projectId:         "projekt-704cf",
+      storageBucket:     "projekt-704cf.firebasestorage.app",
+      messagingSenderId: "371016249348",
+      appId:             "1:371016249348:web:2c50a62616017f10c68551"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+    const REF = doc(db, "liga", "data");
+
+    // ── State ────────────────────────────────────────────────────
+    const DEF = {
+      settings: { startDate:"", startTime:"18:00", spielerPassword:"", dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"] },
+      teams: { team1:{ name:"Team A", players:Array(8).fill("") }, team2:{ name:"Team B", players:Array(8).fill("") } },
+      doubles: { team1:[["",""],["",""],["",""],["",""]], team2:[["",""],["",""],["",""],["",""]] },
+      schedule:[], matchAssignments:{}
+    };
+
+    let S = JSON.parse(JSON.stringify(DEF));
+    let currentUser = null;
+    let currentView = "login";
+    let loginRole   = null;
+    let dragSrc     = null;
+    let unsubscribe = null;
+
+    // ── Firebase ─────────────────────────────────────────────────
+    async function push() {
+      try {
+        await setDoc(REF, { settings:S.settings, teams:S.teams, doubles:S.doubles, schedule:S.schedule, matchAssignments:S.matchAssignments });
+      } catch(e) { toast("⚠ Speichern fehlgeschlagen: "+e.message, true); }
+    }
+
+    function startListener() {
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(REF, snap => {
+        if (snap.exists()) {
+          const d = snap.data();
+          S.settings         = { ...DEF.settings,  ...(d.settings||{}) };
+          S.teams            = { ...DEF.teams,      ...(d.teams||{}) };
+          S.doubles          = { ...DEF.doubles,    ...(d.doubles||{}) };
+          S.schedule         = d.schedule         || [];
+          S.matchAssignments = d.matchAssignments || {};
+        }
+        render();
+      }, e => toast("⚠ Verbindungsfehler: "+e.message, true));
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────
+    const DAY = ["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
+    const dn  = d => DAY[d.getDay()];
+    const fmt = d => d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});
+    const fmtFull = d => d.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+
+    function getPlayDays() {
+      if (!S.settings.startDate) return [];
+      const start = new Date(S.settings.startDate);
+      return Array.from({length:12},(_,i)=>{ const d=new Date(start); d.setDate(d.getDate()+2+i); return d; });
+    }
+
+    function sortDays(days) {
+      const p = S.settings.dayPriority;
+      return [...days].sort((a,b)=>{ const ai=p.indexOf(dn(a)),bi=p.indexOf(dn(b)); return (ai<0?99:ai)-(bi<0?99:bi); });
+    }
+
+    function buildMatches() {
+      const t1=S.teams.team1, t2=S.teams.team2, m=[];
+      for(let i=0;i<8;i++) m.push({id:`E${i+1}`,type:"Einzel",p1:t1.players[i]||`Spieler ${i+1}`,p2:t2.players[i]||`Spieler ${i+1}`,t1:t1.name,t2:t2.name});
+      for(let i=0;i<4;i++){const d1=S.doubles.team1[i],d2=S.doubles.team2[i]; m.push({id:`D${i+1}`,type:"Doppel",p1:[d1[0]||`S${2*i+1}`,d1[1]||`S${2*i+2}`].join(" & "),p2:[d2[0]||`S${2*i+1}`,d2[1]||`S${2*i+2}`].join(" & "),t1:t1.name,t2:t2.name});}
+      return m;
+    }
+
+    function toast(msg, err=false) {
+      const t=document.getElementById("toast");
+      t.className="toast"+(err?" toast-err":""); t.textContent=msg; t.style.opacity="1";
+      clearTimeout(t._t); t._t=setTimeout(()=>t.style.opacity="0",2800);
+    }
+
+    function hdr(tab) {
+      const isAdmin = currentUser==="admin";
+      return `<header class="topbar">
+        <div class="topbar-brand"><span class="brand-icon">🍺</span><span class="brand-name">Beerpong Liga</span></div>
+        <nav class="topbar-nav">
+          ${isAdmin?`<button class="nav-btn ${tab==="einstellungen"?"active":""}" onclick="BP.setView('admin')">Einstellungen</button>`:""}
+          <button class="nav-btn ${tab==="spielplan"?"active":""}" onclick="BP.setView(BP.cu()==='admin'?'admin_plan':'spieler_plan')">Spielplan</button>
+          <button class="nav-btn ${tab==="spiele"?"active":""}" onclick="BP.setView('spiele')">Alle Spiele</button>
+        </nav>
+        <div class="topbar-user"><span class="user-name">${currentUser}</span><button class="btn btn-ghost btn-sm" onclick="BP.logout()">Abmelden</button></div>
+      </header>`;
+    }
+
+    // ── Routing ──────────────────────────────────────────────────
+    function setView(v) { currentView=v; render(); }
+    function render() { ({login:rLogin,admin:rAdmin,admin_plan:rAdminPlan,spieler_plan:rSpielerPlan,spiele:rSpiele}[currentView]||rLogin)(); }
+
+    // ── Login ────────────────────────────────────────────────────
+    function rLogin() {
+      document.getElementById("root").innerHTML=`
+      <div class="login-wrap"><div class="login-card">
+        <div class="login-logo">🍺</div>
+        <h1 class="login-title">Beerpong Liga</h1>
+        <p class="login-sub">Wer bist du?</p>
+        <div class="role-picker">
+          <button class="role-btn ${loginRole==="admin"?"role-active":""}" id="role-admin" onclick="BP.selRole('admin')">
+            <span class="role-icon">🔧</span><span class="role-label">Admin</span>
+          </button>
+          <button class="role-btn ${loginRole==="spieler"?"role-active":""}" id="role-spieler" onclick="BP.selRole('spieler')">
+            <span class="role-icon">🏓</span><span class="role-label">Spieler</span>
+          </button>
+        </div>
+        <div id="pw-section" style="display:${loginRole?"block":"none"}">
+          <div class="field">
+            <label for="lp">${loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort"}</label>
+            <input id="lp" type="password" placeholder="Passwort eingeben" style="width:100%" onkeydown="if(event.key==='Enter')BP.doLogin()" />
+          </div>
+          <p class="err-msg" id="lerr" style="display:none">Falsches Passwort.</p>
+          <button class="btn btn-primary btn-full" onclick="BP.doLogin()">Anmelden</button>
+        </div>
+      </div></div>`;
+    }
+
+    function selRole(r) {
+      loginRole=r; rLogin();
+      setTimeout(()=>{ const el=document.getElementById("lp"); if(el) el.focus(); },50);
+    }
+
+    function doLogin() {
+      const p=document.getElementById("lp").value;
+      if(loginRole==="admin"&&p==="morgakunz7"){ currentUser="admin"; startListener(); setView("admin"); }
+      else if(loginRole==="spieler"&&S.settings.spielerPassword&&p===S.settings.spielerPassword){ currentUser="Spieler"; startListener(); setView("spieler_plan"); }
+      else { document.getElementById("lerr").style.display="block"; }
+    }
+
+    function logout() { currentUser=null; if(unsubscribe){unsubscribe();unsubscribe=null;} setView("login"); }
+
+    // ── Admin Einstellungen ──────────────────────────────────────
+    function rAdmin() {
+      const s=S.settings, t1=S.teams.team1, t2=S.teams.team2, d1=S.doubles.team1, d2=S.doubles.team2;
+      let note="";
+      if(s.startDate){ const d=new Date(s.startDate); d.setDate(d.getDate()+2); note=`<div class="notice">Spieltage starten ab <strong>${fmtFull(d)}</strong>. Insgesamt 12 Spieltage verfügbar.</div>`; }
+      document.getElementById("root").innerHTML=`
+      ${hdr("einstellungen")}<main class="content">
+        <section class="card">
+          <h2 class="card-title">⚙️ Allgemeine Einstellungen</h2>
+          <div class="field-row"><label>Passwort für "Spieler"</label><input id="spw" type="text" value="${s.spielerPassword}" placeholder="Passwort festlegen" /></div>
+          <div class="field-row"><label>Aktuelles Passwort</label><div class="pw-display">${s.spielerPassword?`<span class="pw-value">${s.spielerPassword}</span>`:`<span class="pw-empty">Noch nicht gesetzt</span>`}</div></div>
+          <div class="field-row"><label>Startdatum</label><input id="sd" type="date" value="${s.startDate}" /></div>
+          <div class="field-row"><label>Startuhrzeit</label><input id="st" type="time" value="${s.startTime}" /></div>
+          ${note}
+          <button class="btn btn-primary" onclick="BP.saveSettings()">Speichern</button>
+        </section>
+        <section class="card">
+          <h2 class="card-title">📅 Tagespriorisierung</h2>
+          <p class="card-desc">Ziehe die Wochentage in die gewünschte Reihenfolge. Oben = höchste Priorität.</p>
+          <div id="priolist" class="prio-list">
+            ${s.dayPriority.map((day,i)=>`<div class="prio-row" draggable="true" data-idx="${i}" ondragstart="BP.ds(event)" ondragover="BP.do_(event)" ondrop="BP.dd(event)"><span class="prio-handle">⠿</span><span class="prio-label">${day}</span><span class="prio-rank">#${i+1}</span></div>`).join("")}
+          </div>
+          <button class="btn btn-primary" style="margin-top:12px" onclick="BP.savePrio()">Reihenfolge speichern</button>
+        </section>
+        <section class="card">
+          <h2 class="card-title">👥 Teams & Spieler</h2>
+          <div class="teams-grid">
+            <div class="team-col">
+              <div class="team-header"><span class="tag tag-blue">Team 1</span><input id="tn1" type="text" value="${t1.name}" placeholder="Teamname" /></div>
+              ${t1.players.map((p,i)=>`<div class="player-row"><span class="player-num">${i+1}</span><input class="p1" data-i="${i}" type="text" value="${p}" placeholder="Spieler ${i+1}" /></div>`).join("")}
+            </div>
+            <div class="team-col">
+              <div class="team-header"><span class="tag tag-green">Team 2</span><input id="tn2" type="text" value="${t2.name}" placeholder="Teamname" /></div>
+              ${t2.players.map((p,i)=>`<div class="player-row"><span class="player-num">${i+1}</span><input class="p2" data-i="${i}" type="text" value="${p}" placeholder="Spieler ${i+1}" /></div>`).join("")}
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="BP.savePlayers()">Spieler speichern</button>
+        </section>
+        <section class="card">
+          <h2 class="card-title">🤝 Doppelaufstellung</h2>
+          <div class="teams-grid">
+            <div class="team-col">
+              <div class="team-header"><span class="tag tag-blue">${t1.name}</span></div>
+              ${[0,1,2,3].map(i=>`<div class="double-block"><div class="double-label"><span class="tag tag-blue">D${i+1}</span></div><div class="double-inputs"><input class="d1a" data-i="${i}" type="text" value="${d1[i][0]}" placeholder="Spieler A" /><input class="d1b" data-i="${i}" type="text" value="${d1[i][1]}" placeholder="Spieler B" /></div></div>`).join("")}
+            </div>
+            <div class="team-col">
+              <div class="team-header"><span class="tag tag-green">${t2.name}</span></div>
+              ${[0,1,2,3].map(i=>`<div class="double-block"><div class="double-label"><span class="tag tag-green">D${i+1}</span></div><div class="double-inputs"><input class="d2a" data-i="${i}" type="text" value="${d2[i][0]}" placeholder="Spieler A" /><input class="d2b" data-i="${i}" type="text" value="${d2[i][1]}" placeholder="Spieler B" /></div></div>`).join("")}
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px" onclick="BP.saveDoubles()">Doppel speichern</button>
+        </section>
+      </main>`;
+    }
+
+    function saveSettings() {
+      S.settings.spielerPassword=document.getElementById("spw").value;
+      S.settings.startDate=document.getElementById("sd").value;
+      S.settings.startTime=document.getElementById("st").value;
+      push().then(()=>{ toast("Einstellungen gespeichert ✓"); rAdmin(); });
+    }
+
+    function ds(e){ dragSrc=parseInt(e.currentTarget.dataset.idx); }
+    function do_(e){ e.preventDefault(); }
+    function dd(e){
+      e.preventDefault();
+      const t=parseInt(e.currentTarget.dataset.idx);
+      if(dragSrc===null||dragSrc===t) return;
+      const a=S.settings.dayPriority, item=a.splice(dragSrc,1)[0];
+      a.splice(t,0,item); dragSrc=null; rAdmin();
+    }
+    function savePrio(){ push().then(()=>toast("Priorisierung gespeichert ✓")); }
+
+    function savePlayers(){
+      S.teams.team1.name=document.getElementById("tn1").value||"Team A";
+      S.teams.team2.name=document.getElementById("tn2").value||"Team B";
+      document.querySelectorAll(".p1").forEach(el=>S.teams.team1.players[+el.dataset.i]=el.value);
+      document.querySelectorAll(".p2").forEach(el=>S.teams.team2.players[+el.dataset.i]=el.value);
+      push().then(()=>toast("Spieler gespeichert ✓"));
+    }
+
+    function saveDoubles(){
+      document.querySelectorAll(".d1a").forEach(el=>S.doubles.team1[+el.dataset.i][0]=el.value);
+      document.querySelectorAll(".d1b").forEach(el=>S.doubles.team1[+el.dataset.i][1]=el.value);
+      document.querySelectorAll(".d2a").forEach(el=>S.doubles.team2[+el.dataset.i][0]=el.value);
+      document.querySelectorAll(".d2b").forEach(el=>S.doubles.team2[+el.dataset.i][1]=el.value);
+      push().then(()=>toast("Doppel gespeichert ✓"));
+    }
+
+    // ── Admin Spielplan ──────────────────────────────────────────
+    function rAdminPlan(){
+      const sorted=sortDays(getPlayDays()), sel=S.schedule, matches=buildMatches();
+      if(!S.settings.startDate){ document.getElementById("root").innerHTML=`${hdr("spielplan")}<main class="content"><div class="card"><p class="empty-state">⚠️ Bitte zuerst ein Startdatum in den Einstellungen festlegen.</p></div></main>`; return; }
+      document.getElementById("root").innerHTML=`${hdr("spielplan")}<main class="content">
+        <section class="card">
+          <h2 class="card-title">📅 Spieltage auswählen</h2>
+          <p class="card-desc">Start: <strong>${S.settings.startDate}</strong> · <strong>${S.settings.startTime} Uhr</strong> · Nach Priorität sortiert</p>
+          <div class="days-grid">
+            ${sorted.map(d=>{ const ds=d.toISOString().slice(0,10),isSel=sel.includes(ds); return `<div class="day-tile ${isSel?"day-sel":"day-avail"}" onclick="BP.toggleDay('${ds}')" title="${fmtFull(d)}"><span class="day-wd">${dn(d).slice(0,2)}</span><span class="day-dt">${fmt(d)}</span>${isSel?'<span class="day-check">✓</span>':""}</div>`; }).join("")}
+          </div>
+          <p class="days-count">${sel.length} / 12 Spieltage ausgewählt</p>
+        </section>
+        <section class="card">
+          <h2 class="card-title">🗓 Spielzuordnung</h2>
+          <p class="card-desc">Weise jedem Spiel einen Spieltag zu.</p>
+          <div class="match-list">
+            ${matches.map(m=>`<div class="match-row"><span class="tag ${m.type==="Einzel"?"tag-blue":"tag-green"}">${m.id}</span><span class="match-players">${m.p1} <em>vs</em> ${m.p2}</span><select class="match-select" onchange="BP.assignDay('${m.id}',this.value)"><option value="">– kein Tag –</option>${sel.map(ds=>{ const d=new Date(ds); return `<option value="${ds}" ${S.matchAssignments[m.id]===ds?"selected":""}>${dn(d).slice(0,2)} ${fmt(d)}</option>`; }).join("")}</select></div>`).join("")}
+          </div>
+        </section>
+      </main>`;
+    }
+
+    function toggleDay(ds){ const i=S.schedule.indexOf(ds); if(i>=0) S.schedule.splice(i,1); else if(S.schedule.length<12) S.schedule.push(ds); push().then(()=>rAdminPlan()); }
+    function assignDay(mid,day){ if(day) S.matchAssignments[mid]=day; else delete S.matchAssignments[mid]; push(); }
+
+    // ── Spieler Spielplan ────────────────────────────────────────
+    function rSpielerPlan(){
+      const matches=buildMatches(), byDay={};
+      Object.entries(S.matchAssignments).forEach(([mid,ds])=>{ if(!byDay[ds])byDay[ds]=[]; byDay[ds].push(mid); });
+      const days=Object.keys(byDay).sort();
+      document.getElementById("root").innerHTML=`${hdr("spielplan")}<main class="content"><section class="card">
+        <h2 class="card-title">📅 Spielplan</h2>
+        ${days.length===0?`<p class="empty-state">Noch kein Spielplan veröffentlicht.</p>`:days.map(ds=>{ const d=new Date(ds),dm=byDay[ds].map(mid=>matches.find(m=>m.id===mid)).filter(Boolean); return `<div class="day-block"><div class="day-block-header">${fmtFull(d)} · ${S.settings.startTime} Uhr</div>${dm.map(m=>`<div class="match-row"><span class="tag ${m.type==="Einzel"?"tag-blue":"tag-green"}">${m.id}</span><span class="match-players">${m.p1} <em>vs</em> ${m.p2}</span><span class="tag tag-gray">${m.type}</span></div>`).join("")}</div>`; }).join("")}
+      </section></main>`;
+    }
+
+    // ── Alle Spiele ──────────────────────────────────────────────
+    function rSpiele(){
+      const matches=buildMatches();
+      const tbl=list=>`<table class="match-table"><thead><tr><th>#</th><th>${S.teams.team1.name}</th><th></th><th>${S.teams.team2.name}</th><th>Datum</th></tr></thead><tbody>${list.map(m=>{ const ds=S.matchAssignments[m.id],d=ds?new Date(ds):null; return `<tr><td><span class="tag ${m.type==="Einzel"?"tag-blue":"tag-green"}">${m.id}</span></td><td>${m.p1}</td><td class="vs-cell">vs</td><td>${m.p2}</td><td class="date-cell">${d?dn(d).slice(0,2)+". "+fmt(d):"–"}</td></tr>`; }).join("")}</tbody></table>`;
+      document.getElementById("root").innerHTML=`${hdr("spiele")}<main class="content">
+        <section class="card"><h2 class="card-title">🏆 Einzel (E1–E8)</h2>${tbl(matches.filter(m=>m.type==="Einzel"))}</section>
+        <section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>${tbl(matches.filter(m=>m.type==="Doppel"))}</section>
+      </main>`;
+    }
+
+    // ── Global API ───────────────────────────────────────────────
+    window.BP = {
+      setView, doLogin, logout, selRole,
+      saveSettings, savePrio, savePlayers, saveDoubles,
+      ds, do_, dd, toggleDay, assignDay,
+      cu: () => currentUser
+    };
+
+    // ── Boot ─────────────────────────────────────────────────────
+    startListener();
+  </script>
 </body>
 </html>
