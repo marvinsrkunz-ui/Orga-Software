@@ -177,35 +177,57 @@ function logout() {
 }
 
 // ── Login ────────────────────────────────────────────────────
+let loginRole = null; // "admin" | "spieler"
+
 function renderLogin() {
   document.getElementById("root").innerHTML = `
   <div class="login-wrap">
     <div class="login-card">
       <div class="login-logo">🍺</div>
       <h1 class="login-title">Beerpong Liga</h1>
-      <p class="login-sub">Anmelden um fortzufahren</p>
-      <div class="field">
-        <label for="lu">Benutzername</label>
-        <input id="lu" type="text" placeholder="admin oder Spieler" autocomplete="username" />
+      <p class="login-sub">Wer bist du?</p>
+
+      <div class="role-picker" id="role-picker">
+        <button class="role-btn" id="role-admin" onclick="selectRole('admin')">
+          <span class="role-icon">🔧</span>
+          <span class="role-label">Admin</span>
+        </button>
+        <button class="role-btn" id="role-spieler" onclick="selectRole('spieler')">
+          <span class="role-icon">🏓</span>
+          <span class="role-label">Spieler</span>
+        </button>
       </div>
-      <div class="field">
-        <label for="lp">Passwort</label>
-        <input id="lp" type="password" placeholder="Passwort" autocomplete="current-password"
-          onkeydown="if(event.key==='Enter')doLogin()" />
+
+      <div id="pw-section" style="display:none">
+        <div class="field">
+          <label for="lp" id="pw-label">Passwort</label>
+          <input id="lp" type="password" placeholder="Passwort eingeben"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')doLogin()" />
+        </div>
+        <p class="err-msg" id="lerr" style="display:none">Falsches Passwort.</p>
+        <button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>
       </div>
-      <p class="err-msg" id="lerr" style="display:none">Benutzername oder Passwort falsch.</p>
-      <button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>
     </div>
   </div>`;
+  if (loginRole) selectRole(loginRole);
+}
+
+function selectRole(role) {
+  loginRole = role;
+  document.querySelectorAll(".role-btn").forEach(b => b.classList.remove("role-active"));
+  document.getElementById("role-" + role).classList.add("role-active");
+  document.getElementById("pw-section").style.display = "block";
+  document.getElementById("pw-label").textContent = role === "admin" ? "Admin-Passwort" : "Spieler-Passwort";
+  document.getElementById("lp").focus();
 }
 
 function doLogin() {
-  const u = document.getElementById("lu").value.trim();
-  const p = document.getElementById("lp").value;
+  const p   = document.getElementById("lp").value;
   const err = document.getElementById("lerr");
-  if (u === "admin" && p === "morgakunz7") {
+  if (loginRole === "admin" && p === "morgakunz7") {
     currentUser = "admin"; startListener(); setView("admin");
-  } else if (u === "Spieler" && S.settings.spielerPassword && p === S.settings.spielerPassword) {
+  } else if (loginRole === "spieler" && S.settings.spielerPassword && p === S.settings.spielerPassword) {
     currentUser = "Spieler"; startListener(); setView("spieler_plan");
   } else {
     err.style.display = "block";
@@ -234,6 +256,14 @@ function renderAdmin() {
       <div class="field-row">
         <label>Passwort für "Spieler"</label>
         <input id="spw" type="text" value="${s.spielerPassword}" placeholder="Passwort festlegen" />
+      </div>
+      <div class="field-row">
+        <label>Aktuelles Passwort</label>
+        <div class="pw-display">
+          ${s.spielerPassword
+            ? `<span class="pw-value" id="pw-shown">${s.spielerPassword}</span>`
+            : `<span class="pw-empty">Noch kein Passwort gesetzt</span>`}
+        </div>
       </div>
       <div class="field-row">
         <label>Startdatum</label>
@@ -515,7 +545,7 @@ function renderSpiele() {
 
 // ── Expose to window (called from inline onclick) ────────────
 Object.assign(window, {
-  setView, doLogin, logout,
+  setView, doLogin, logout, selectRole,
   saveSettings, savePrio, savePlayers, saveDoubles,
   dragStart, dragOver, dropDay,
   toggleDay, assignDay,
