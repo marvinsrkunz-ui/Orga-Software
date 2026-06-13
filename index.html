@@ -484,8 +484,14 @@
           }
         });
       });
-      // Nach Datum sortieren (chronologisch)
-      return Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0])).map(([ds,v])=>({ds,...v}));
+      // Nach Priorität sortieren
+      const prio2 = S.settings.dayPriority;
+      return Object.entries(byDay).sort((a,b)=>{
+        const da = new Date(a[0]), db = new Date(b[0]);
+        const ai = prio2.indexOf(DAY[da.getDay()]), bi = prio2.indexOf(DAY[db.getDay()]);
+        if(ai !== bi) return (ai<0?99:ai)-(bi<0?99:bi);
+        return a[0].localeCompare(b[0]);
+      }).map(([ds,v])=>({ds,...v}));
     }
 
     function renderGanttDay(ds, date, matchSlots) {
