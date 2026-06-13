@@ -451,82 +451,95 @@
       document.getElementById("root").innerHTML = html;
     }
 
+    // Findet gemeinsame Slots aller beteiligten Spieler
+    function getPossibleSlots(m) {
+      const days = getPlayDays();
+      const result = [];
+      const p1names = m.p1.includes(" & ") ? m.p1.split(" & ") : [m.p1];
+      const p2names = m.p2.includes(" & ") ? m.p2.split(" & ") : [m.p2];
+      const allNames = [...p1names, ...p2names].map(n=>n.trim()).filter(n=>n);
+      days.forEach(d=>{
+        const ds = d.toISOString().slice(0,10);
+        const slots = getSlots(d.getDay());
+        const common = slots.filter(t => allNames.every(name => ((S.availability[name]||{})[ds]||[]).includes(t)));
+        if(common.length > 0) result.push({date:d, ds, slots:common});
+      });
+      const prio = S.settings.dayPriority;
+      result.sort((a,b)=>{ const ai=prio.indexOf(dn(a.date)),bi=prio.indexOf(dn(b.date)); return (ai<0?99:ai)-(bi<0?99:bi); });
+      return result;
+    }
+
+    function renderMatchBar(m) {
+      const possible = getPossibleSlots(m);
+      const assigned = S.matchAssignments[m.id];
+      const isAdmin = currentUser==="admin";
+      let html = '<div style="background:var(--bg);border-radius:var(--radius);padding:12px;margin-bottom:10px;border:1px solid var(--border)">';
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+      html += '<span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
+      html += '<span style="font-size:13px;font-weight:500">'+m.p1+' <em style="color:var(--faint);font-style:normal">vs</em> '+m.p2+'</span>';
+      if(assigned){ const ad=new Date(assigned); html += '<span class="tag" style="background:#e8f5ee;color:#164d2e;margin-left:auto">✓ '+dn(ad).slice(0,2)+' '+fmt(ad)+'</span>'; }
+      html += '</div>';
+      if(possible.length===0){
+        html += '<p style="font-size:12px;color:var(--faint)">Noch keine gemeinsamen Verfügbarkeiten.</p>';
+      } else {
+        possible.forEach(({date,ds,slots})=>{
+          const isAss = assigned===ds;
+          html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">';
+          html += '<span style="font-size:12px;font-weight:600;min-width:90px;color:'+(isAss?"var(--blue)":"var(--text)")+'">'+dn(date)+' '+fmt(date)+'</span>';
+          html += '<div style="display:flex;flex-wrap:wrap;gap:3px;flex:1">';
+          slots.forEach(t=>{
+            const col=isAss?"#3a6fd8":"#2a7a4b", bg=isAss?"#eef2fc":"#e8f5ee";
+            html += '<span style="padding:2px 7px;border-radius:20px;font-size:11px;background:'+bg+';color:'+col+';font-weight:500">'+t+'</span>';
+          });
+          html += '</div>';
+          if(isAdmin){
+            html += '<button class="btn btn-sm" style="'+(isAss?"background:#3a6fd8;color:#fff;border-color:#3a6fd8":"")+'" onclick="assignDay(\''+ m.id +'\','+(isAss?"\'\'":"\'"+ds+"\'")+')">'+(isAss?"✓ Zugewiesen":"Zuweisen")+'</button>';
+          }
+          html += '</div>';
+        });
+      }
+      html += '</div>';
+      return html;
+    }
+
     // ── Admin Spielplan ──────────────────────────────────────────
     function rAdminPlan(){
-      const days = getPlayDays();
-      // Für Spielplan: Tage nach Priorität sortieren
-      const sortedDays = sortDaysByPrio(days);
-      const sel = S.schedule, matches = buildMatches();
-
       if(!S.settings.startDate){
         document.getElementById("root").innerHTML=hdr("spielplan")+'<main class="content"><div class="card"><p class="empty-state">⚠️ Bitte zuerst ein Startdatum festlegen.</p></div></main>';
         return;
       }
-
+      const matches = buildMatches();
       let html = hdr("spielplan") + '<main class="content">';
-      html += '<section class="card"><h2 class="card-title">📅 Spieltage auswählen</h2>';
-      html += '<p class="card-desc">Tage nach Priorität sortiert. Wähle bis zu 12 Spieltage aus.</p>';
-      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin:12px 0">';
-      sortedDays.forEach(d=>{
-        const ds=d.toISOString().slice(0,10),isSel=sel.includes(ds);
-        html+='<div style="border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;border:1px solid '+(isSel?"#2d5ab5":"#9ad4b3")+';background:'+(isSel?"#3a6fd8":"#e8f5ee")+';color:'+(isSel?"#fff":"#164d2e")+'" onclick="toggleDay(\''+ds+'\')" title="'+fmtFull(d)+'">';
-        html+='<div style="font-size:11px;opacity:.8">'+dn(d).slice(0,2)+'</div>';
-        html+='<div style="font-size:13px;font-weight:600">'+fmt(d)+'</div>';
-        if(isSel) html+='<div style="font-size:11px">✓</div>';
-        html+='</div>';
-      });
-      html += '</div><p style="font-size:13px;color:var(--muted)">'+sel.length+' / 12 ausgewählt</p></section>';
-
-      html += '<section class="card"><h2 class="card-title">🗓 Spielzuordnung</h2>';
-      html += '<p class="card-desc">Weise jedem Spiel einen Spieltag zu.</p><div>';
-      matches.forEach(m=>{
-        const selDs = S.matchAssignments[m.id]||"";
-        html+='<div class="match-row"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
-        html+='<span class="match-players">'+m.p1+' <em>vs</em> '+m.p2+'</span>';
-        html+='<select class="match-select" onchange="assignDay(\''+m.id+'\',this.value)"><option value="">– kein Tag –</option>';
-        sel.forEach(ds=>{const d=new Date(ds);html+='<option value="'+ds+'"'+(selDs===ds?" selected":"")+'>'+dn(d).slice(0,2)+' '+fmt(d)+'</option>';});
-        html+='</select></div>';
-      });
-      html += '</div></section></main>';
+      html += '<section class="card"><h2 class="card-title">📊 Mögliche Spieltermine</h2>';
+      html += '<p class="card-desc">Zeigt gemeinsame Verfügbarkeiten beider Spieler — nach Priorität sortiert. Klicke "Zuweisen" um einen Termin festzulegen.</p>';
+      html += '<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px">🏆 Einzel</h3>';
+      matches.filter(m=>m.type==="Einzel").forEach(m=>{ html+=renderMatchBar(m); });
+      html += '<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px">🤝 Doppel</h3>';
+      matches.filter(m=>m.type==="Doppel").forEach(m=>{ html+=renderMatchBar(m); });
+      html += '</section></main>';
       document.getElementById("root").innerHTML = html;
     }
 
-    function toggleDay(ds){
-      const i=S.schedule.indexOf(ds);
-      if(i>=0) S.schedule.splice(i,1);
-      else if(S.schedule.length<12) S.schedule.push(ds);
-      push().then(()=>rAdminPlan());
-    }
     function assignDay(mid,day){
       if(day) S.matchAssignments[mid]=day; else delete S.matchAssignments[mid];
-      push();
+      push().then(()=>rAdminPlan());
     }
 
     // ── Spieler Spielplan ────────────────────────────────────────
     function rSpielerPlan(){
-      const matches=buildMatches(), byDay={};
-      Object.entries(S.matchAssignments).forEach(([mid,ds])=>{if(!byDay[ds])byDay[ds]=[];byDay[ds].push(mid);});
-      const days=Object.keys(byDay).sort(); // chronologisch
-      let html=hdr("spielplan")+'<main class="content"><section class="card"><h2 class="card-title">📅 Spielplan</h2>';
-      if(days.length===0){ html+='<p class="empty-state">Noch kein Spielplan veröffentlicht.</p>'; }
-      else {
-        days.forEach(ds=>{
-          const d=new Date(ds);
-          const dm=byDay[ds].map(mid=>matches.find(m=>m.id===mid)).filter(Boolean);
-          html+='<div class="plan-day"><div class="plan-day-header">'+fmtFull(d)+'</div>';
-          dm.forEach(m=>{
-            html+='<div class="match-row"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
-            html+='<span class="match-players">'+m.p1+' <em>vs</em> '+m.p2+'</span>';
-            html+='<span class="tag tag-gray">'+m.type+'</span></div>';
-          });
-          html+='</div>';
-        });
-      }
-      html+='</section></main>';
-      document.getElementById("root").innerHTML=html;
+      const matches = buildMatches();
+      let html = hdr("spielplan") + '<main class="content">';
+      html += '<section class="card"><h2 class="card-title">📊 Mögliche Spieltermine</h2>';
+      html += '<p class="card-desc">Wann deine Spiele stattfinden könnten — basierend auf den Verfügbarkeiten.</p>';
+      html += '<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px">🏆 Einzel</h3>';
+      matches.filter(m=>m.type==="Einzel").forEach(m=>{ html+=renderMatchBar(m); });
+      html += '<h3 style="font-size:14px;font-weight:600;margin:16px 0 8px">🤝 Doppel</h3>';
+      matches.filter(m=>m.type==="Doppel").forEach(m=>{ html+=renderMatchBar(m); });
+      html += '</section></main>';
+      document.getElementById("root").innerHTML = html;
     }
 
-    // ── Alle Spiele ──────────────────────────────────────────────
+        // ── Alle Spiele ──────────────────────────────────────────────
     function rSpiele(){
       const matches=buildMatches();
       function tbl(list){
