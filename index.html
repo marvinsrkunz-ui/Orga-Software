@@ -18,7 +18,6 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.6; color: var(--text); background: var(--bg); min-height: 100vh; }
     .topbar { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; padding: 0 24px; height: 56px; }
     .topbar-brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; }
-    .brand-icon { font-size: 20px; }
     .topbar-nav { display: flex; gap: 2px; flex: 1; }
     .nav-btn { padding: 6px 14px; border: none; background: none; cursor: pointer; font-size: 14px; font-family: inherit; color: var(--muted); border-radius: var(--radius); border-bottom: 2px solid transparent; }
     .nav-btn:hover { color: var(--text); background: var(--bg); }
@@ -44,12 +43,10 @@
     .role-btn.role-active { border-color: var(--blue); background: var(--blue-bg); }
     .role-icon { font-size: 32px; }
     .role-label { font-size: 14px; font-weight: 600; color: var(--text); }
-    .content { max-width: 860px; margin: 0 auto; padding: 24px 24px 60px; }
+    .content { max-width: 900px; margin: 0 auto; padding: 24px 24px 60px; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
     .card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
     .card-desc { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    .field { margin-bottom: 14px; }
-    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
     .field-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
     .field-row label { font-size: 13px; color: var(--muted); min-width: 160px; }
     input, select { padding: 8px 11px; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 14px; font-family: inherit; background: var(--surface); color: var(--text); width: 220px; }
@@ -66,37 +63,39 @@
     .prio-label { flex: 1; font-size: 14px; }
     .prio-rank { font-size: 12px; color: var(--faint); }
     .teams-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media (max-width: 560px) { .teams-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) { .teams-grid { grid-template-columns: 1fr; } }
     .team-col { background: var(--bg); border-radius: var(--radius); padding: 14px; border: 1px solid var(--border); }
     .team-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
     .team-header input { width: 100%; min-width: 0; flex: 1; }
     .player-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .player-row input { width: 100%; min-width: 0; flex: 1; }
+    .player-row input, .player-row select { width: 100%; min-width: 0; flex: 1; }
     .player-num { font-size: 12px; color: var(--muted); min-width: 18px; text-align: right; }
     .double-block { margin-bottom: 12px; }
     .double-label { margin-bottom: 4px; }
     .double-inputs { display: flex; gap: 8px; flex-wrap: wrap; }
-    .double-inputs input { flex: 1; min-width: 100px; width: auto; }
+    .double-inputs select { flex: 1; min-width: 100px; width: auto; }
     .tag { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
     .tag-blue  { background: var(--blue-bg);  color: var(--blue-text); }
     .tag-green { background: var(--green-bg); color: var(--green-text); }
     .tag-gray  { background: var(--gray-bg);  color: var(--gray-text); }
-    .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px; margin: 12px 0; }
-    .day-tile { border-radius: var(--radius); padding: 10px 6px; text-align: center; cursor: pointer; border: 1px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .day-tile:hover { transform: scale(1.04); }
-    .day-avail { background: var(--green-bg); border-color: #9ad4b3; color: var(--green-text); }
-    .day-sel   { background: var(--blue); color: #fff; border-color: #2d5ab5; }
-    .day-wd { font-size: 11px; opacity: .8; }
-    .day-dt { font-size: 13px; font-weight: 600; }
-    .days-count { font-size: 13px; color: var(--muted); margin-top: 6px; }
-    .match-list { display: flex; flex-direction: column; gap: 2px; }
+    /* Availability table */
+    .avail-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .avail-table th { text-align: left; padding: 8px 10px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+    .avail-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .avail-table tr:last-child td { border-bottom: none; }
+    .avail-table td:first-child { font-weight: 500; white-space: nowrap; min-width: 110px; }
+    .time-slots { display: flex; flex-wrap: wrap; gap: 4px; }
+    .time-slot { padding: 3px 8px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--border2); background: var(--surface); color: var(--muted); user-select: none; }
+    .time-slot:hover { border-color: var(--blue); color: var(--blue); }
+    .time-slot.on { background: var(--blue); color: #fff; border-color: var(--blue); }
+    /* Spielplan */
+    .plan-day { margin-bottom: 20px; }
+    .plan-day-header { font-size: 14px; font-weight: 600; padding: 8px 12px; background: var(--bg); border-radius: var(--radius); margin-bottom: 8px; }
     .match-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
     .match-row:last-child { border-bottom: none; }
     .match-players { flex: 1; font-size: 13px; min-width: 120px; }
     .match-players em { color: var(--faint); font-style: normal; margin: 0 4px; }
-    .match-select { width: 150px; }
-    .day-block { margin-bottom: 20px; }
-    .day-block-header { font-size: 14px; font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid var(--border); }
+    .match-select { width: 160px; }
     .match-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .match-table th { text-align: left; padding: 8px 10px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
     .match-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
@@ -106,32 +105,32 @@
     .empty-state { color: var(--muted); font-size: 14px; padding: 12px 0; }
     .toast { position: fixed; bottom: 24px; right: 24px; background: #1a1917; color: #fff; padding: 10px 18px; border-radius: var(--radius); font-size: 13px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 999; }
     .toast-err { background: #c0392b; }
-    .sync-bar { background: #e8f5ee; border-bottom: 1px solid #9ad4b3; padding: 6px 24px; font-size: 12px; color: #164d2e; display: flex; align-items: center; gap: 8px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+    /* availability per spieler */
+    .spieler-avail-section { margin-bottom: 20px; }
+    .spieler-avail-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
   </style>
 </head>
 <body>
   <div id="root"></div>
   <div class="toast" id="toast"></div>
-
   <script>
-    // ── Config ───────────────────────────────────────────────────
-    // JSONBin.io für Datensynchronisation (kein eval benötigt)
     const BIN_ID  = "6a2dbe72f5f4af5e29ed3aae";
     const API_KEY = "$2a$10$3LtezdRQg2Ne0/9WICvsXucZI5a/LIQeQt4OH7D3eYipzjqhEDDn6";
     const BIN_URL = "https://api.jsonbin.io/v3/b/" + BIN_ID;
 
-    // ── State ────────────────────────────────────────────────────
     const DEF = {
       settings: { startDate:"", startTime:"18:00", spielerPassword:"", dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"] },
       teams: { team1:{name:"Team A",players:["","","","","","","",""]}, team2:{name:"Team B",players:["","","","","","","",""]} },
       doubles: { team1:[["",""],["",""],["",""],["",""]], team2:[["",""],["",""],["",""],["",""]] },
-      schedule:[], matchAssignments:{}
+      schedule:[], matchAssignments:{},
+      availability:{} // { "spielername": { "2024-01-15": ["18:00","19:00",...] } }
     };
 
     let S = JSON.parse(JSON.stringify(DEF));
     let currentUser=null, currentView="login", loginRole=null, dragSrc=null;
 
-    // ── JSONBin sync ─────────────────────────────────────────────
     async function loadData() {
       try {
         const r = await fetch(BIN_URL + "/latest", {
@@ -145,9 +144,10 @@
             S.doubles          = Object.assign({}, DEF.doubles, d.doubles || {});
             S.schedule         = d.schedule || [];
             S.matchAssignments = d.matchAssignments || {};
+            S.availability     = d.availability || {};
           }
         }
-      } catch(e) { console.error("Load error:", e); }
+      } catch(e) { console.error(e); }
       render();
     }
 
@@ -156,70 +156,100 @@
         const r = await fetch(BIN_URL, {
           method: "PUT",
           headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY, "X-Access-Key": API_KEY },
-          body: JSON.stringify({ settings:S.settings, teams:S.teams, doubles:S.doubles, schedule:S.schedule, matchAssignments:S.matchAssignments })
+          body: JSON.stringify({ settings:S.settings, teams:S.teams, doubles:S.doubles, schedule:S.schedule, matchAssignments:S.matchAssignments, availability:S.availability })
         });
         if (!r.ok) throw new Error("Status " + r.status);
         toast("Gespeichert ✓");
-      } catch(e) { toast("⚠ Speichern fehlgeschlagen: " + e.message, true); }
+      } catch(e) { toast("⚠ Fehler: " + e.message, true); }
     }
 
-    // Alle 30 Sekunden neu laden (für andere Geräte)
     setInterval(() => { if(currentUser) loadData(); }, 30000);
 
-    // ── Helpers ──────────────────────────────────────────────────
     const DAY=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
     const dn=d=>DAY[d.getDay()];
     const fmt=d=>d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});
     const fmtFull=d=>d.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
+
+    // Uhrzeiten je Wochentag
+    function getSlots(dayIdx) {
+      // 0=So, 1=Mo, 2=Di, 3=Mi, 4=Do, 5=Fr, 6=Sa
+      if (dayIdx === 6) { // Samstag 12-24
+        const s=[]; for(let h=12;h<=23;h++) s.push(pad(h)+":00"); return s;
+      } else if (dayIdx === 0) { // Sonntag 12-23
+        const s=[]; for(let h=12;h<=23;h++) s.push(pad(h)+":00"); return s;
+      } else { // Mo-Fr 18-23
+        const s=[]; for(let h=18;h<=23;h++) s.push(pad(h)+":00"); return s;
+      }
+    }
+    function pad(n){return n<10?"0"+n:String(n);}
 
     function getPlayDays(){
       if(!S.settings.startDate) return [];
       const start=new Date(S.settings.startDate);
       return Array.from({length:12},(_,i)=>{const d=new Date(start);d.setDate(d.getDate()+2+i);return d;});
     }
-    function sortDays(days){
+
+    function sortDaysByPrio(days){
       const p=S.settings.dayPriority;
       return [...days].sort((a,b)=>{const ai=p.indexOf(dn(a)),bi=p.indexOf(dn(b));return(ai<0?99:ai)-(bi<0?99:bi);});
     }
+
     function buildMatches(){
       const t1=S.teams.team1,t2=S.teams.team2,m=[];
-      for(let i=0;i<8;i++) m.push({id:"E"+(i+1),type:"Einzel",p1:t1.players[i]||"Spieler "+(i+1),p2:t2.players[i]||"Spieler "+(i+1),t1:t1.name,t2:t2.name});
-      for(let i=0;i<4;i++){const d1=S.doubles.team1[i],d2=S.doubles.team2[i];m.push({id:"D"+(i+1),type:"Doppel",p1:(d1[0]||"S"+(2*i+1))+" & "+(d1[1]||"S"+(2*i+2)),p2:(d2[0]||"S"+(2*i+1))+" & "+(d2[1]||"S"+(2*i+2)),t1:t1.name,t2:t2.name});}
+      for(let i=0;i<8;i++) m.push({id:"E"+(i+1),type:"Einzel",p1:t1.players[i]||"Spieler "+(i+1),p2:t2.players[i]||"Spieler "+(i+1)});
+      for(let i=0;i<4;i++){
+        const d1=S.doubles.team1[i],d2=S.doubles.team2[i];
+        m.push({id:"D"+(i+1),type:"Doppel",
+          p1:(d1[0]||"S"+(2*i+1))+" & "+(d1[1]||"S"+(2*i+2)),
+          p2:(d2[0]||"S"+(2*i+1))+" & "+(d2[1]||"S"+(2*i+2))});
+      }
       return m;
     }
+
+    // Alle Spieler beider Teams
+    function allPlayers(){
+      return [...S.teams.team1.players, ...S.teams.team2.players].filter(p=>p.trim());
+    }
+
     function toast(msg,err){
       const t=document.getElementById("toast");
       t.className="toast"+(err?" toast-err":"");t.textContent=msg;t.style.opacity="1";
       clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity="0",2800);
     }
+
     function hdr(tab){
       const isAdmin=currentUser==="admin";
-      return '<header class="topbar"><div class="topbar-brand"><span class="brand-icon">🍺</span><span>Beerpong Liga</span></div><nav class="topbar-nav">'
+      return '<header class="topbar"><div class="topbar-brand"><span style="font-size:20px">🍺</span><span>Beerpong Liga</span></div><nav class="topbar-nav">'
         +(isAdmin?'<button class="nav-btn '+(tab==="einstellungen"?"active":"")+('" onclick="setView(\'admin\')">Einstellungen</button>'):"")
+        +'<button class="nav-btn '+(tab==="verfuegbarkeit"?"active":"")+('" onclick="setView(currentUser===\'admin\'?\'admin_avail\':\'spieler_avail\')">Verfügbarkeit</button>')
         +'<button class="nav-btn '+(tab==="spielplan"?"active":"")+('" onclick="setView(currentUser===\'admin\'?\'admin_plan\':\'spieler_plan\')">Spielplan</button>')
         +'<button class="nav-btn '+(tab==="spiele"?"active":"")+('" onclick="setView(\'spiele\')">Alle Spiele</button>')
         +'</nav><div class="topbar-user"><span class="user-name">'+currentUser+'</span><button class="btn btn-ghost btn-sm" onclick="logout()">Abmelden</button></div></header>';
     }
+
     function setView(v){currentView=v;render();}
-    function render(){({login:rLogin,admin:rAdmin,admin_plan:rAdminPlan,spieler_plan:rSpielerPlan,spiele:rSpiele}[currentView]||rLogin)();}
+    function render(){
+      const views={login:rLogin,admin:rAdmin,admin_avail:rAdminAvail,admin_plan:rAdminPlan,spieler_avail:rSpielerAvail,spieler_plan:rSpielerPlan,spiele:rSpiele};
+      (views[currentView]||rLogin)();
+    }
 
     // ── Login ────────────────────────────────────────────────────
     function rLogin(){
       document.getElementById("root").innerHTML=
-      '<div class="login-wrap"><div class="login-card">'
-      +'<div class="login-logo">🍺</div>'
-      +'<h1 class="login-title">Beerpong Liga</h1>'
-      +'<p class="login-sub">Wer bist du?</p>'
-      +'<div class="role-picker">'
-      +'<button class="role-btn '+(loginRole==="admin"?"role-active":"")+('" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>')
-      +'<button class="role-btn '+(loginRole==="spieler"?"role-active":"")+('" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>')
-      +'</div>'
-      +'<div id="pw-section" style="display:'+(loginRole?"block":"none")+'">'
-      +'<div class="field"><label>'+(loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort")+'</label>'
-      +'<input id="lp" type="password" placeholder="Passwort eingeben" style="width:100%" onkeydown="if(event.key===\'Enter\')doLogin()" /></div>'
-      +'<p class="err-msg" id="lerr" style="display:none">Falsches Passwort.</p>'
-      +'<button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>'
-      +'</div></div></div>';
+        '<div class="login-wrap"><div class="login-card">'
+        +'<div class="login-logo">🍺</div>'
+        +'<h1 class="login-title">Beerpong Liga</h1>'
+        +'<p class="login-sub">Wer bist du?</p>'
+        +'<div class="role-picker">'
+        +'<button class="role-btn '+(loginRole==="admin"?"role-active":"")+('" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>')
+        +'<button class="role-btn '+(loginRole==="spieler"?"role-active":"")+('" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>')
+        +'</div>'
+        +'<div id="pw-section" style="display:'+(loginRole?"block":"none")+'">'
+        +'<div class="field"><label>'+(loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort")+'</label>'
+        +'<input id="lp" type="password" placeholder="Passwort eingeben" style="width:100%" onkeydown="if(event.key===\'Enter\')doLogin()" /></div>'
+        +'<p class="err-msg" id="lerr" style="display:none">Falsches Passwort.</p>'
+        +'<button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>'
+        +'</div></div></div>';
     }
     function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
     async function doLogin(){
@@ -231,17 +261,25 @@
         await loadData();
         document.getElementById("lp").disabled=false;
         if(S.settings.spielerPassword&&p===S.settings.spielerPassword){
-          currentUser="Spieler"; setView("spieler_plan");
+          currentUser="Spieler"; setView("spieler_avail");
         } else { document.getElementById("lerr").style.display="block"; }
       } else { document.getElementById("lerr").style.display="block"; }
     }
     function logout(){currentUser=null;loginRole=null;setView("login");}
 
-    // ── Admin ────────────────────────────────────────────────────
+    // ── Admin Einstellungen ──────────────────────────────────────
     function rAdmin(){
       const s=S.settings,t1=S.teams.team1,t2=S.teams.team2,d1=S.doubles.team1,d2=S.doubles.team2;
       let note="";
       if(s.startDate){const d=new Date(s.startDate);d.setDate(d.getDate()+2);note='<div class="notice">Spieltage starten ab <strong>'+fmtFull(d)+'</strong>. 12 Spieltage verfügbar.</div>';}
+
+      // Player options for dropdowns
+      function playerOpts(team, selVal) {
+        let o='<option value="">– wählen –</option>';
+        team.players.forEach(p=>{ if(p) o+='<option value="'+p+'"'+(selVal===p?" selected":"")+'>'+p+'</option>'; });
+        return o;
+      }
+
       let html=hdr("einstellungen")+'<main class="content">';
       html+='<section class="card"><h2 class="card-title">⚙️ Allgemeine Einstellungen</h2>';
       html+='<div class="field-row"><label>Passwort für "Spieler"</label><input id="spw" type="text" value="'+s.spielerPassword+'" placeholder="Passwort festlegen" /></div>';
@@ -249,21 +287,37 @@
       html+='<div class="field-row"><label>Startdatum</label><input id="sd" type="date" value="'+s.startDate+'" /></div>';
       html+='<div class="field-row"><label>Startuhrzeit</label><input id="st" type="time" value="'+s.startTime+'" /></div>';
       html+=note+'<button class="btn btn-primary" onclick="saveSettings()">Speichern</button></section>';
-      html+='<section class="card"><h2 class="card-title">📅 Tagespriorisierung</h2><p class="card-desc">Ziehe die Wochentage in die gewünschte Reihenfolge.</p><div class="prio-list">';
+
+      html+='<section class="card"><h2 class="card-title">📅 Tagespriorisierung</h2><p class="card-desc">Höchste Priorität oben — bestimmt die Reihenfolge im Spielplan-Vorschlag.</p><div class="prio-list">';
       s.dayPriority.forEach((day,i)=>{html+='<div class="prio-row" draggable="true" data-idx="'+i+'" ondragstart="ds(event)" ondragover="do_(event)" ondrop="dd(event)"><span class="prio-handle">⠿</span><span class="prio-label">'+day+'</span><span class="prio-rank">#'+(i+1)+'</span></div>';});
       html+='</div><button class="btn btn-primary" style="margin-top:12px" onclick="savePrio()">Reihenfolge speichern</button></section>';
+
       html+='<section class="card"><h2 class="card-title">👥 Teams & Spieler</h2><div class="teams-grid">';
       html+='<div class="team-col"><div class="team-header"><span class="tag tag-blue">Team 1</span><input id="tn1" type="text" value="'+t1.name+'" /></div>';
       t1.players.forEach((p,i)=>{html+='<div class="player-row"><span class="player-num">'+(i+1)+'</span><input class="p1" data-i="'+i+'" type="text" value="'+p+'" placeholder="Spieler '+(i+1)+'" /></div>';});
       html+='</div><div class="team-col"><div class="team-header"><span class="tag tag-green">Team 2</span><input id="tn2" type="text" value="'+t2.name+'" /></div>';
       t2.players.forEach((p,i)=>{html+='<div class="player-row"><span class="player-num">'+(i+1)+'</span><input class="p2" data-i="'+i+'" type="text" value="'+p+'" placeholder="Spieler '+(i+1)+'" /></div>';});
       html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="savePlayers()">Spieler speichern</button></section>';
-      html+='<section class="card"><h2 class="card-title">🤝 Doppelaufstellung</h2><div class="teams-grid">';
+
+      html+='<section class="card"><h2 class="card-title">🤝 Doppelaufstellung</h2><p class="card-desc">Spieler aus den Einzeln oben auswählen.</p><div class="teams-grid">';
       html+='<div class="team-col"><div class="team-header"><span class="tag tag-blue">'+t1.name+'</span></div>';
-      [0,1,2,3].forEach(i=>{html+='<div class="double-block"><div class="double-label"><span class="tag tag-blue">D'+(i+1)+'</span></div><div class="double-inputs"><input class="d1a" data-i="'+i+'" type="text" value="'+d1[i][0]+'" placeholder="Spieler A" /><input class="d1b" data-i="'+i+'" type="text" value="'+d1[i][1]+'" placeholder="Spieler B" /></div></div>';});
+      [0,1,2,3].forEach(i=>{
+        html+='<div class="double-block"><div class="double-label"><span class="tag tag-blue">D'+(i+1)+'</span></div><div class="double-inputs">';
+        html+='<select class="d1a" data-i="'+i+'">'+playerOpts(t1,d1[i][0])+'</select>';
+        html+='<select class="d1b" data-i="'+i+'">'+playerOpts(t1,d1[i][1])+'</select>';
+        html+='</div></div>';
+      });
       html+='</div><div class="team-col"><div class="team-header"><span class="tag tag-green">'+t2.name+'</span></div>';
-      [0,1,2,3].forEach(i=>{html+='<div class="double-block"><div class="double-label"><span class="tag tag-green">D'+(i+1)+'</span></div><div class="double-inputs"><input class="d2a" data-i="'+i+'" type="text" value="'+d2[i][0]+'" placeholder="Spieler A" /><input class="d2b" data-i="'+i+'" type="text" value="'+d2[i][1]+'" placeholder="Spieler B" /></div></div>';});
-      html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="saveDoubles()">Doppel speichern</button></section><section class="card"><h2 class="card-title">⚠️ Daten zurücksetzen</h2><p class="card-desc">Setzt alle Daten (Teams, Spieler, Spielplan, Einstellungen) auf den Ausgangszustand zurück.</p><button class="btn" style="background:#c0392b;color:#fff;border-color:#c0392b" onclick="resetAll()">🗑 Alle Daten zurücksetzen</button></section></main>';
+      [0,1,2,3].forEach(i=>{
+        html+='<div class="double-block"><div class="double-label"><span class="tag tag-green">D'+(i+1)+'</span></div><div class="double-inputs">';
+        html+='<select class="d2a" data-i="'+i+'">'+playerOpts(t2,d2[i][0])+'</select>';
+        html+='<select class="d2b" data-i="'+i+'">'+playerOpts(t2,d2[i][1])+'</select>';
+        html+='</div></div>';
+      });
+      html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="saveDoubles()">Doppel speichern</button></section>';
+
+      html+='<section class="card"><h2 class="card-title">⚠️ Daten zurücksetzen</h2><p class="card-desc">Setzt alle Daten auf den Ausgangszustand zurück.</p>';
+      html+='<button class="btn" style="background:#c0392b;color:#fff;border-color:#c0392b" onclick="resetAll()">🗑 Alle Daten zurücksetzen</button></section></main>';
       document.getElementById("root").innerHTML=html;
     }
 
@@ -282,7 +336,7 @@
       const a=S.settings.dayPriority,item=a.splice(dragSrc,1)[0];
       a.splice(t,0,item);dragSrc=null;rAdmin();
     }
-    function savePrio(){push();}
+    function savePrio(){push().then(()=>toast("Priorisierung gespeichert ✓"));}
     function savePlayers(){
       S.teams.team1.name=document.getElementById("tn1").value||"Team A";
       S.teams.team2.name=document.getElementById("tn2").value||"Team B";
@@ -297,40 +351,177 @@
       document.querySelectorAll(".d2b").forEach(el=>S.doubles.team2[+el.dataset.i][1]=el.value);
       push();
     }
-
     function resetAll(){
-      if(!confirm("Wirklich alle Daten zurücksetzen? Dies kann nicht rückgängig gemacht werden!")) return;
-      S = JSON.parse(JSON.stringify(DEF));
-      push().then(()=>{ toast("Alle Daten zurückgesetzt ✓"); rAdmin(); });
+      if(!confirm("Wirklich alle Daten zurücksetzen?")) return;
+      S=JSON.parse(JSON.stringify(DEF));
+      push().then(()=>{toast("Zurückgesetzt ✓");rAdmin();});
+    }
+
+    // ── Verfügbarkeit (Spieler) ──────────────────────────────────
+    // Spieler wählen ihren Namen und markieren Uhrzeiten pro Tag
+    let selectedSpieler = null;
+
+    function rSpielerAvail(){
+      const days = getPlayDays(); // chronologisch
+      const players = allPlayers();
+
+      let html = hdr("verfuegbarkeit") + '<main class="content">';
+      html += '<section class="card"><h2 class="card-title">📅 Deine Verfügbarkeit eintragen</h2>';
+      html += '<p class="card-desc">Wähle zuerst deinen Namen, dann klicke die Uhrzeiten an an denen du verfügbar bist.</p>';
+
+      // Name auswählen
+      html += '<div class="field-row"><label>Dein Name</label><select id="spieler-name" onchange="onSpielerSelect(this.value)" style="width:200px"><option value="">– Name wählen –</option>';
+      players.forEach(p=>{ html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+'>'+p+'</option>'; });
+      html += '</select></div>';
+
+      if(selectedSpieler && days.length > 0){
+        html += '<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th><th>Verfügbare Zeiten (anklicken)</th></tr></thead><tbody>';
+        days.forEach(d=>{
+          const ds = d.toISOString().slice(0,10);
+          const slots = getSlots(d.getDay());
+          const sel = (S.availability[selectedSpieler]||{})[ds]||[];
+          html += '<tr><td><strong>'+dn(d)+'</strong><br><span style="font-size:11px;color:var(--muted)">'+fmt(d)+'</span></td><td><div class="time-slots">';
+          slots.forEach(t=>{
+            const on = sel.includes(t);
+            html += '<span class="time-slot'+(on?" on":"")+'" onclick="toggleSlot(\''+ds+'\',\''+t+'\')" >'+t+'</span>';
+          });
+          html += '</div></td></tr>';
+        });
+        html += '</tbody></table></div>';
+        html += '<button class="btn btn-primary" style="margin-top:14px" onclick="saveAvail()">Verfügbarkeit speichern</button>';
+      } else if(!selectedSpieler) {
+        html += '<p class="empty-state">Bitte wähle deinen Namen aus.</p>';
+      } else {
+        html += '<p class="empty-state">Noch kein Startdatum vom Admin festgelegt.</p>';
+      }
+      html += '</section></main>';
+      document.getElementById("root").innerHTML = html;
+    }
+
+    function onSpielerSelect(name){ selectedSpieler=name; rSpielerAvail(); }
+
+    function toggleSlot(ds, time){
+      if(!selectedSpieler) return;
+      if(!S.availability[selectedSpieler]) S.availability[selectedSpieler]={};
+      if(!S.availability[selectedSpieler][ds]) S.availability[selectedSpieler][ds]=[];
+      const arr = S.availability[selectedSpieler][ds];
+      const idx = arr.indexOf(time);
+      if(idx>=0) arr.splice(idx,1); else arr.push(time);
+      rSpielerAvail();
+    }
+
+    function saveAvail(){ push(); }
+
+    // ── Verfügbarkeit (Admin-Übersicht) ─────────────────────────
+    function rAdminAvail(){
+      const days = getPlayDays();
+      let html = hdr("verfuegbarkeit") + '<main class="content">';
+      html += '<section class="card"><h2 class="card-title">📊 Verfügbarkeitsübersicht</h2>';
+      html += '<p class="card-desc">Tage in chronologischer Reihenfolge. Priorisierung gilt für den Spielplan-Vorschlag.</p>';
+
+      if(days.length === 0){
+        html += '<p class="empty-state">Noch kein Startdatum festgelegt.</p></section></main>';
+        document.getElementById("root").innerHTML = html;
+        return;
+      }
+
+      const players = allPlayers();
+
+      html += '<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th>';
+      players.forEach(p=>{ html+='<th style="min-width:80px">'+p+'</th>'; });
+      html += '</tr></thead><tbody>';
+
+      days.forEach(d=>{
+        const ds = d.toISOString().slice(0,10);
+        const slots = getSlots(d.getDay());
+        html += '<tr><td><strong>'+dn(d)+'</strong><br><span style="font-size:11px;color:var(--muted)">'+fmt(d)+'</span></td>';
+        players.forEach(p=>{
+          const avail = (S.availability[p]||{})[ds]||[];
+          if(avail.length===0){
+            html += '<td style="color:var(--faint);font-size:12px">–</td>';
+          } else {
+            html += '<td><div class="time-slots">';
+            avail.sort().forEach(t=>{ html+='<span class="time-slot on" style="cursor:default;font-size:11px">'+t+'</span>'; });
+            html += '</div></td>';
+          }
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table></div></section></main>';
+      document.getElementById("root").innerHTML = html;
     }
 
     // ── Admin Spielplan ──────────────────────────────────────────
     function rAdminPlan(){
-      const sorted=sortDays(getPlayDays()),sel=S.schedule,matches=buildMatches();
-      if(!S.settings.startDate){document.getElementById("root").innerHTML=hdr("spielplan")+'<main class="content"><div class="card"><p class="empty-state">⚠️ Bitte zuerst ein Startdatum festlegen.</p></div></main>';return;}
-      let html=hdr("spielplan")+'<main class="content"><section class="card"><h2 class="card-title">📅 Spieltage auswählen</h2><p class="card-desc">Start: <strong>'+S.settings.startDate+'</strong> · <strong>'+S.settings.startTime+' Uhr</strong></p><div class="days-grid">';
-      sorted.forEach(d=>{const ds=d.toISOString().slice(0,10),isSel=sel.includes(ds);html+='<div class="day-tile '+(isSel?"day-sel":"day-avail")+'" onclick="toggleDay(\''+ds+'\')" title="'+fmtFull(d)+'"><span class="day-wd">'+dn(d).slice(0,2)+'</span><span class="day-dt">'+fmt(d)+'</span>'+(isSel?'<span>✓</span>':'')+'</div>';});
-      html+='</div><p class="days-count">'+sel.length+' / 12 Spieltage ausgewählt</p></section>';
-      html+='<section class="card"><h2 class="card-title">🗓 Spielzuordnung</h2><p class="card-desc">Weise jedem Spiel einen Spieltag zu.</p><div class="match-list">';
+      const days = getPlayDays();
+      // Für Spielplan: Tage nach Priorität sortieren
+      const sortedDays = sortDaysByPrio(days);
+      const sel = S.schedule, matches = buildMatches();
+
+      if(!S.settings.startDate){
+        document.getElementById("root").innerHTML=hdr("spielplan")+'<main class="content"><div class="card"><p class="empty-state">⚠️ Bitte zuerst ein Startdatum festlegen.</p></div></main>';
+        return;
+      }
+
+      let html = hdr("spielplan") + '<main class="content">';
+      html += '<section class="card"><h2 class="card-title">📅 Spieltage auswählen</h2>';
+      html += '<p class="card-desc">Tage nach Priorität sortiert. Wähle bis zu 12 Spieltage aus.</p>';
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin:12px 0">';
+      sortedDays.forEach(d=>{
+        const ds=d.toISOString().slice(0,10),isSel=sel.includes(ds);
+        html+='<div style="border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;border:1px solid '+(isSel?"#2d5ab5":"#9ad4b3")+';background:'+(isSel?"#3a6fd8":"#e8f5ee")+';color:'+(isSel?"#fff":"#164d2e")+'" onclick="toggleDay(\''+ds+'\')" title="'+fmtFull(d)+'">';
+        html+='<div style="font-size:11px;opacity:.8">'+dn(d).slice(0,2)+'</div>';
+        html+='<div style="font-size:13px;font-weight:600">'+fmt(d)+'</div>';
+        if(isSel) html+='<div style="font-size:11px">✓</div>';
+        html+='</div>';
+      });
+      html += '</div><p style="font-size:13px;color:var(--muted)">'+sel.length+' / 12 ausgewählt</p></section>';
+
+      html += '<section class="card"><h2 class="card-title">🗓 Spielzuordnung</h2>';
+      html += '<p class="card-desc">Weise jedem Spiel einen Spieltag zu.</p><div>';
       matches.forEach(m=>{
-        html+='<div class="match-row"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span><span class="match-players">'+m.p1+' <em>vs</em> '+m.p2+'</span><select class="match-select" onchange="assignDay(\''+m.id+'\',this.value)"><option value="">– kein Tag –</option>';
-        sel.forEach(ds=>{const d=new Date(ds);html+='<option value="'+ds+'"'+(S.matchAssignments[m.id]===ds?" selected":"")+'>'+dn(d).slice(0,2)+' '+fmt(d)+'</option>';});
+        const selDs = S.matchAssignments[m.id]||"";
+        html+='<div class="match-row"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
+        html+='<span class="match-players">'+m.p1+' <em>vs</em> '+m.p2+'</span>';
+        html+='<select class="match-select" onchange="assignDay(\''+m.id+'\',this.value)"><option value="">– kein Tag –</option>';
+        sel.forEach(ds=>{const d=new Date(ds);html+='<option value="'+ds+'"'+(selDs===ds?" selected":"")+'>'+dn(d).slice(0,2)+' '+fmt(d)+'</option>';});
         html+='</select></div>';
       });
-      html+='</div></section></main>';
-      document.getElementById("root").innerHTML=html;
+      html += '</div></section></main>';
+      document.getElementById("root").innerHTML = html;
     }
-    function toggleDay(ds){const i=S.schedule.indexOf(ds);if(i>=0)S.schedule.splice(i,1);else if(S.schedule.length<12)S.schedule.push(ds);push().then(()=>rAdminPlan());}
-    function assignDay(mid,day){if(day)S.matchAssignments[mid]=day;else delete S.matchAssignments[mid];push();}
+
+    function toggleDay(ds){
+      const i=S.schedule.indexOf(ds);
+      if(i>=0) S.schedule.splice(i,1);
+      else if(S.schedule.length<12) S.schedule.push(ds);
+      push().then(()=>rAdminPlan());
+    }
+    function assignDay(mid,day){
+      if(day) S.matchAssignments[mid]=day; else delete S.matchAssignments[mid];
+      push();
+    }
 
     // ── Spieler Spielplan ────────────────────────────────────────
     function rSpielerPlan(){
-      const matches=buildMatches(),byDay={};
+      const matches=buildMatches(), byDay={};
       Object.entries(S.matchAssignments).forEach(([mid,ds])=>{if(!byDay[ds])byDay[ds]=[];byDay[ds].push(mid);});
-      const days=Object.keys(byDay).sort();
+      const days=Object.keys(byDay).sort(); // chronologisch
       let html=hdr("spielplan")+'<main class="content"><section class="card"><h2 class="card-title">📅 Spielplan</h2>';
-      if(days.length===0){html+='<p class="empty-state">Noch kein Spielplan veröffentlicht.</p>';}
-      else{days.forEach(ds=>{const d=new Date(ds),dm=byDay[ds].map(mid=>matches.find(m=>m.id===mid)).filter(Boolean);html+='<div class="day-block"><div class="day-block-header">'+fmtFull(d)+' · '+S.settings.startTime+' Uhr</div>';dm.forEach(m=>{html+='<div class="match-row"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span><span class="match-players">'+m.p1+' <em>vs</em> '+m.p2+'</span><span class="tag tag-gray">'+m.type+'</span></div>';});html+='</div>';});}
+      if(days.length===0){ html+='<p class="empty-state">Noch kein Spielplan veröffentlicht.</p>'; }
+      else {
+        days.forEach(ds=>{
+          const d=new Date(ds);
+          const dm=byDay[ds].map(mid=>matches.find(m=>m.id===mid)).filter(Boolean);
+          html+='<div class="plan-day"><div class="plan-day-header">'+fmtFull(d)+'</div>';
+          dm.forEach(m=>{
+            html+='<div class="match-row"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
+            html+='<span class="match-players">'+m.p1+' <em>vs</em> '+m.p2+'</span>';
+            html+='<span class="tag tag-gray">'+m.type+'</span></div>';
+          });
+          html+='</div>';
+        });
+      }
       html+='</section></main>';
       document.getElementById("root").innerHTML=html;
     }
@@ -340,13 +531,19 @@
       const matches=buildMatches();
       function tbl(list){
         let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>Datum</th></tr></thead><tbody>';
-        list.forEach(m=>{const ds=S.matchAssignments[m.id],d=ds?new Date(ds):null;t+='<tr><td><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span></td><td>'+m.p1+'</td><td class="vs-cell">vs</td><td>'+m.p2+'</td><td class="date-cell">'+(d?dn(d).slice(0,2)+". "+fmt(d):"–")+'</td></tr>';});
+        list.forEach(m=>{
+          const ds=S.matchAssignments[m.id],d=ds?new Date(ds):null;
+          t+='<tr><td><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span></td>';
+          t+='<td>'+m.p1+'</td><td class="vs-cell">vs</td><td>'+m.p2+'</td>';
+          t+='<td class="date-cell">'+(d?dn(d).slice(0,2)+". "+fmt(d):"–")+'</td></tr>';
+        });
         return t+'</tbody></table>';
       }
-      document.getElementById("root").innerHTML=hdr("spiele")+'<main class="content"><section class="card"><h2 class="card-title">🏆 Einzel (E1–E8)</h2>'+tbl(matches.filter(m=>m.type==="Einzel"))+'</section><section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
+      document.getElementById("root").innerHTML=hdr("spiele")+'<main class="content">'
+        +'<section class="card"><h2 class="card-title">🏆 Einzel (E1–E8)</h2>'+tbl(matches.filter(m=>m.type==="Einzel"))+'</section>'
+        +'<section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
     }
 
-    // ── Boot ─────────────────────────────────────────────────────
     rLogin();
   </script>
 </body>
