@@ -285,7 +285,7 @@
       html+='<div class="field-row"><label>Passwort für "Spieler"</label><input id="spw" type="text" value="'+s.spielerPassword+'" placeholder="Passwort festlegen" /></div>';
       html+='<div class="field-row"><label>Aktuelles Passwort</label><div class="pw-display">'+(s.spielerPassword?'<span class="pw-value">'+s.spielerPassword+'</span>':'<span class="pw-empty">Noch nicht gesetzt</span>')+'</div></div>';
       html+='<div class="field-row"><label>Startdatum</label><input id="sd" type="date" value="'+s.startDate+'" /></div>';
-      html+='<div class="field-row"><label>Startuhrzeit</label><input id="st" type="time" value="'+s.startTime+'" /></div>';
+      
       html+=note+'<button class="btn btn-primary" onclick="saveSettings()">Speichern</button></section>';
 
       html+='<section class="card"><h2 class="card-title">📅 Tagespriorisierung</h2><p class="card-desc">Höchste Priorität oben — bestimmt die Reihenfolge im Spielplan-Vorschlag.</p><div class="prio-list">';
