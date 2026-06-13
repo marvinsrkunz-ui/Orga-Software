@@ -173,13 +173,15 @@
     // Uhrzeiten je Wochentag
     function getSlots(dayIdx) {
       // 0=So, 1=Mo, 2=Di, 3=Mi, 4=Do, 5=Fr, 6=Sa
-      if (dayIdx === 6) { // Samstag 12-24
-        const s=[]; for(let h=12;h<=23;h++) s.push(pad(h)+":00"); return s;
-      } else if (dayIdx === 0) { // Sonntag 12-23
-        const s=[]; for(let h=12;h<=23;h++) s.push(pad(h)+":00"); return s;
-      } else { // Mo-Fr 18-23
-        const s=[]; for(let h=18;h<=23;h++) s.push(pad(h)+":00"); return s;
+      const slots = [];
+      let startH, endH;
+      if (dayIdx === 6 || dayIdx === 0) { startH=12; endH=23; }
+      else { startH=18; endH=23; }
+      for(let h=startH; h<=endH; h++){
+        slots.push(pad(h)+":00");
+        if(h < endH) slots.push(pad(h)+":30");
       }
+      return slots;
     }
     function pad(n){return n<10?"0"+n:String(n);}
 
@@ -495,62 +497,53 @@
     }
 
     function renderGanttDay(ds, date, matchSlots) {
-      const dayIdx = date.getDay();
-      const allSlots = getSlots(dayIdx);
-      const firstH = parseInt(allSlots[0]);
-      const lastH  = parseInt(allSlots[allSlots.length-1]);
-      const totalH = lastH - firstH + 1;
+      const allDaySlots = getSlots(date.getDay());
       const assigned = S.matchAssignments;
       const isAdmin = currentUser==="admin";
 
       let html = '<div style="margin-bottom:28px">';
-      // Tages-Header
       html += '<div style="font-size:15px;font-weight:600;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--blue)">'+fmtFull(date)+'</div>';
 
-      // Zeitstrahl-Header
-      html += '<div style="display:flex;margin-bottom:4px;padding-left:120px">';
-      for(let h=firstH;h<=lastH;h++){
-        html += '<div style="flex:1;text-align:left;font-size:10px;color:var(--muted);font-weight:500">'+pad(h)+':00</div>';
-      }
+      // Zeitstrahl-Header (nur volle Stunden)
+      html += '<div style="display:flex;margin-bottom:2px;padding-left:120px">';
+      allDaySlots.forEach((t,i)=>{
+        if(t.endsWith(':00')) html += '<div style="flex:2;text-align:left;font-size:10px;color:var(--muted);font-weight:500">'+t+'</div>';
+        else html += '<div style="flex:2"></div>';
+      });
       html += '</div>';
 
-      // Trennlinie
-      html += '<div style="display:flex;margin-bottom:8px;padding-left:120px">';
-      for(let h=firstH;h<=lastH;h++){
-        html += '<div style="flex:1;border-left:1px solid var(--border);height:6px"></div>';
-      }
+      // Trennlinie mit Markierungen
+      html += '<div style="display:flex;margin-bottom:6px;padding-left:120px">';
+      allDaySlots.forEach((t,i)=>{
+        const isHour = t.endsWith(':00');
+        html += '<div style="flex:2;border-left:1px solid '+(isHour?'var(--border2)':'var(--border)')+';height:5px"></div>';
+      });
       html += '</div>';
 
       // Spiele als Balken
       matchSlots.forEach(({m, slots})=>{
         const isAss = assigned[m.id]===ds;
         const color = isAss ? "#3a6fd8" : (m.type==="Einzel" ? "#2a7a4b" : "#7a4b2a");
-        const bgColor = isAss ? "#eef2fc" : (m.type==="Einzel" ? "#e8f5ee" : "#f5eee8");
+        const bgColor = isAss ? "#dce8fb" : (m.type==="Einzel" ? "#d4eddf" : "#f5eee8");
         const borderColor = isAss ? "#3a6fd8" : (m.type==="Einzel" ? "#5dcaa5" : "#d4a017");
 
-        html += '<div style="display:flex;align-items:center;margin-bottom:6px">';
-        // Label
+        html += '<div style="display:flex;align-items:center;margin-bottom:5px">';
         html += '<div style="width:120px;min-width:120px;display:flex;align-items:center;gap:6px;padding-right:8px">';
         html += '<span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
-        html += '<span style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(" ")[0]+'</span>';
+        html += '<span style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(' ')[0]+'</span>';
         html += '</div>';
 
-        // Zeitstrahl
-        html += '<div style="flex:1;display:flex;position:relative;height:24px">';
-        for(let h=firstH;h<=lastH;h++){
-          const t = pad(h)+":00";
+        html += '<div style="flex:1;display:flex;height:22px">';
+        allDaySlots.forEach((t,i)=>{
           const active = slots.includes(t);
-          html += '<div style="flex:1;height:100%;background:'+(active?bgColor:"transparent")+';border-left:1px solid '+(active?borderColor:"var(--border)")+';border-top:'+(active?"1px solid "+borderColor:"none")+';border-bottom:'+(active?"1px solid "+borderColor:"none")+';cursor:'+(isAdmin&&active?"pointer":"default")+'"';
-          if(isAdmin && active){
-            html += ' onclick="assignDay(\''+ m.id +'\',\''+ ds +'\')" title="'+ m.id +': '+m.p1+' vs '+m.p2+' — '+t+'"';
-          }
+          const isHour = t.endsWith(':00');
+          html += '<div style="flex:2;height:100%;background:'+(active?bgColor:'transparent')+';border-left:1px solid '+(active?borderColor:(isHour?'var(--border2)':'var(--border)'))+';border-top:'+(active?'1px solid '+borderColor:'none')+';border-bottom:'+(active?'1px solid '+borderColor:'none')+';cursor:'+(isAdmin&&active?'pointer':'default')+'"';
+          if(isAdmin && active) html += ' onclick="assignDay(\''+ m.id +'\',\''+ ds +'\')" title="'+ m.id +': '+t+'"';
           html += '></div>';
-        }
-        // Letzte Grenze
+        });
         html += '<div style="width:1px;background:var(--border)"></div>';
         html += '</div>';
 
-        // Status / Zuweisen Button (Admin)
         if(isAdmin){
           html += '<div style="width:90px;min-width:90px;padding-left:8px">';
           if(isAss){
@@ -562,11 +555,10 @@
           }
           html += '</div>';
         }
-
-        html += '</div>'; // match row
+        html += '</div>';
       });
 
-      html += '</div>'; // day block
+      html += '</div>';
       return html;
     }
 
