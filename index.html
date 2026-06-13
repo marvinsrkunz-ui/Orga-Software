@@ -116,7 +116,7 @@
   <script>
     // ── Config ───────────────────────────────────────────────────
     // JSONBin.io für Datensynchronisation (kein eval benötigt)
-    const BIN_ID  = "6a2dbc48da38895dfebbae03";
+    const BIN_ID  = "6a2dbe72f5f4af5e29ed3aae";
     const API_KEY = "$2a$10$3LtezdRQg2Ne0/9WICvsXucZI5a/LIQeQt4OH7D3eYipzjqhEDDn6";
     const BIN_URL = "https://api.jsonbin.io/v3/b/" + BIN_ID;
 
@@ -135,7 +135,7 @@
     async function loadData() {
       try {
         const r = await fetch(BIN_URL + "/latest", {
-          headers: { "X-Master-Key": API_KEY, "X-Bin-Meta": "false" }
+          headers: { "X-Master-Key": API_KEY, "X-Access-Key": API_KEY, "X-Bin-Meta": "false" }
         });
         if (r.ok) {
           const d = await r.json();
@@ -155,7 +155,7 @@
       try {
         const r = await fetch(BIN_URL, {
           method: "PUT",
-          headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
+          headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY, "X-Access-Key": API_KEY },
           body: JSON.stringify({ settings:S.settings, teams:S.teams, doubles:S.doubles, schedule:S.schedule, matchAssignments:S.matchAssignments })
         });
         if (!r.ok) throw new Error("Status " + r.status);
