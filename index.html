@@ -224,7 +224,7 @@
     function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
     async function doLogin(){
       const p=document.getElementById("lp").value;
-      if(loginRole==="admin"&&p==="morgakunz7"){
+      if(loginRole==="admin"&&p==="qwertz"){
         currentUser="admin"; await loadData(); setView("admin");
       } else if(loginRole==="spieler"){
         document.getElementById("lp").disabled=true;
@@ -263,7 +263,7 @@
       [0,1,2,3].forEach(i=>{html+='<div class="double-block"><div class="double-label"><span class="tag tag-blue">D'+(i+1)+'</span></div><div class="double-inputs"><input class="d1a" data-i="'+i+'" type="text" value="'+d1[i][0]+'" placeholder="Spieler A" /><input class="d1b" data-i="'+i+'" type="text" value="'+d1[i][1]+'" placeholder="Spieler B" /></div></div>';});
       html+='</div><div class="team-col"><div class="team-header"><span class="tag tag-green">'+t2.name+'</span></div>';
       [0,1,2,3].forEach(i=>{html+='<div class="double-block"><div class="double-label"><span class="tag tag-green">D'+(i+1)+'</span></div><div class="double-inputs"><input class="d2a" data-i="'+i+'" type="text" value="'+d2[i][0]+'" placeholder="Spieler A" /><input class="d2b" data-i="'+i+'" type="text" value="'+d2[i][1]+'" placeholder="Spieler B" /></div></div>';});
-      html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="saveDoubles()">Doppel speichern</button></section></main>';
+      html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="saveDoubles()">Doppel speichern</button></section><section class="card"><h2 class="card-title">⚠️ Daten zurücksetzen</h2><p class="card-desc">Setzt alle Daten (Teams, Spieler, Spielplan, Einstellungen) auf den Ausgangszustand zurück.</p><button class="btn" style="background:#c0392b;color:#fff;border-color:#c0392b" onclick="resetAll()">🗑 Alle Daten zurücksetzen</button></section></main>';
       document.getElementById("root").innerHTML=html;
     }
 
@@ -296,6 +296,12 @@
       document.querySelectorAll(".d2a").forEach(el=>S.doubles.team2[+el.dataset.i][0]=el.value);
       document.querySelectorAll(".d2b").forEach(el=>S.doubles.team2[+el.dataset.i][1]=el.value);
       push();
+    }
+
+    function resetAll(){
+      if(!confirm("Wirklich alle Daten zurücksetzen? Dies kann nicht rückgängig gemacht werden!")) return;
+      S = JSON.parse(JSON.stringify(DEF));
+      push().then(()=>{ toast("Alle Daten zurückgesetzt ✓"); rAdmin(); });
     }
 
     // ── Admin Spielplan ──────────────────────────────────────────
