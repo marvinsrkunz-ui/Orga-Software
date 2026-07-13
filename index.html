@@ -172,14 +172,13 @@
 
     // Uhrzeiten je Wochentag
     function getSlots(dayIdx) {
-      // 0=So, 1=Mo, 2=Di, 3=Mi, 4=Do, 5=Fr, 6=Sa
+      // 0=So, 6=Sa: 12-23, Mo-Fr: 17-23
       const slots = [];
-      let startH, endH;
-      if (dayIdx === 6 || dayIdx === 0) { startH=12; endH=23; }
-      else { startH=18; endH=23; }
+      let startH = (dayIdx === 0 || dayIdx === 6) ? 12 : 17;
+      let endH = 23;
       for(let h=startH; h<=endH; h++){
         slots.push(pad(h)+":00");
-        slots.push(pad(h)+":30");
+        if(h < endH) slots.push(pad(h)+":30");
       }
       return slots;
     }
@@ -619,7 +618,7 @@
           let timeStr = '–';
           if(ds){
             const possible = getPossibleSlots(m).find(p=>p.ds===ds);
-            if(possible && possible.slots.length>0) timeStr = dn(d).slice(0,2)+'. '+fmt(d)+' ab '+possible.slots[0]+' Uhr';
+            if(possible && possible.slots.length>0) timeStr = dn(d).slice(0,2)+'. '+fmt(d)+', '+possible.slots[0]+' Uhr';
             else timeStr = dn(d).slice(0,2)+'. '+fmt(d);
           }
           t+='<tr><td><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span></td>';
@@ -636,4 +635,119 @@
     rLogin();
   </script>
 </body>
-</html>
+</html    function renderGanttDay(ds, date, matchSlots, showAssign) {
+      const allDaySlots = getSlots(date.getDay());
+      const assigned = S.matchAssignments;
+      const hours = allDaySlots.filter(t=>t.endsWith(':00'));
+      const firstH = parseInt(hours[0]);
+      const lastH  = parseInt(hours[hours.length-1]);
+      const totalMin = (lastH + 1 - firstH) * 60; // +1 because axis goes to lastH+1
+
+      function toPct(t) {
+        const [h,m] = t.split(':').map(Number);
+        return ((h - firstH)*60 + m) / totalMin * 100;
+      }
+
+      const LABEL_W = 130;
+      let html = '<div style="margin-bottom:32px">';
+
+      // Day header
+      html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px;padding:8px 14px;background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--radius);color:var(--blue-text)">'+fmtFull(date)+'</div>';
+
+      // Axis container (aligned with bar area)
+      html += '<div style="display:flex;align-items:flex-end;margin-bottom:0">';
+      html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
+      html += '<div style="flex:1;position:relative;height:18px">';
+      // Hour labels — positioned absolutely so they align exactly
+      for(let h=firstH; h<=lastH+1; h++){
+        const p = ((h-firstH)*60)/totalMin*100;
+        html += '<div style="position:absolute;left:'+p+'%;font-size:10px;color:var(--muted);font-weight:600;transform:translateX(-50%);white-space:nowrap">'+pad(h)+':00</div>';
+      }
+      html += '</div>';
+      if(showAssign) html += '<div style="width:96px;min-width:96px"></div>';
+      html += '</div>';
+
+      // Tick row
+      html += '<div style="display:flex;align-items:flex-end;margin-bottom:6px">';
+      html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
+      html += '<div style="flex:1;position:relative;height:6px;background:var(--bg);border-top:1px solid var(--border2)">';
+      for(let h=firstH; h<=lastH+1; h++){
+        const p = ((h-firstH)*60)/totalMin*100;
+        html += '<div style="position:absolute;left:'+p+'%;top:0;height:100%;width:1px;background:var(--border2)"></div>';
+        if(h<=lastH){
+          const ph = ((h-firstH)*60+30)/totalMin*100;
+          html += '<div style="position:absolute;left:'+ph+'%;top:0;height:60%;width:1px;background:var(--border)"></div>';
+        }
+      }
+      html += '</div>';
+      if(showAssign) html += '<div style="width:96px;min-width:96px"></div>';
+      html += '</div>';
+
+      // Match rows
+      matchSlots.forEach(({m, slots})=>{
+        const isAss = assigned[m.id]===ds;
+        const bgColor   = isAss ? '#dce8fb' : (m.type==='Einzel' ? '#d0eddc' : '#faeeda');
+        const borderCol = isAss ? '#3a6fd8' : (m.type==='Einzel' ? '#3dab6b' : '#c8860a');
+
+        html += '<div style="display:flex;align-items:center;margin-bottom:4px">';
+
+        // Label
+        html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px;display:flex;align-items:center;gap:6px;padding-right:10px">';
+        html += '<span class="tag '+(m.type==='Einzel'?'tag-blue':'tag-green')+'">'+m.id+'</span>';
+        html += '<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(' & ')[0].split(' ')[0]+'</span>';
+        if(isAss) html += '<span style="font-size:10px;color:#3a6fd8;font-weight:700">✓</span>';
+        html += '</div>';
+
+        // Bar
+        html += '<div style="flex:1;position:relative;height:24px;background:var(--bg);border-radius:3px;border:1px solid var(--border)">';
+
+        // Grid lines inside bar
+        for(let h=firstH; h<=lastH+1; h++){
+          const p = ((h-firstH)*60)/totalMin*100;
+          html += '<div style="position:absolute;left:'+p+'%;top:0;bottom:0;width:1px;background:var(--border2)"></div>';
+          if(h<=lastH){
+            const ph = ((h-firstH)*60+30)/totalMin*100;
+            html += '<div style="position:absolute;left:'+ph+'%;top:0;bottom:0;width:1px;background:var(--border)"></div>';
+          }
+        }
+
+        // Merge consecutive slots into ranges then draw
+        let ranges=[], rangeStart=null;
+        allDaySlots.forEach((t,i)=>{
+          if(slots.includes(t)){ if(rangeStart===null) rangeStart=t; }
+          else { if(rangeStart!==null){ ranges.push({s:rangeStart,e:allDaySlots[i-1]}); rangeStart=null; } }
+        });
+        if(rangeStart!==null) ranges.push({s:rangeStart,e:allDaySlots[allDaySlots.length-1]});
+
+        ranges.forEach(({s,e})=>{
+          const left = toPct(s);
+          // end of last slot = slot start + 30min
+          const [eh,em] = e.split(':').map(Number);
+          const endMin = (eh-firstH)*60+em+30;
+          const right = Math.min(endMin/totalMin*100, 100);
+          const width = right - left;
+          const clickable = showAssign && !isAss;
+          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:1px;bottom:1px;background:'+bgColor+';border:1px solid '+borderCol+';border-radius:2px;box-sizing:border-box;cursor:'+(clickable?'pointer':'default')+'"';
+          if(clickable) html += ' onclick="assignDay(''+m.id+'',''+ds+'')" title="'+m.id+' zuweisen: '+s+' Uhr"';
+          html += '></div>';
+        });
+
+        html += '</div>'; // bar
+
+        // Assign button
+        if(showAssign){
+          html += '<div style="width:96px;min-width:96px;padding-left:8px">';
+          if(isAss){
+            html += '<button class="btn btn-sm" style="background:#3a6fd8;color:#fff;border-color:#3a6fd8;font-size:11px;white-space:nowrap" onclick="assignDay(''+m.id+'','')">✓ Zugewiesen</button>';
+          } else {
+            html += '<button class="btn btn-sm" style="font-size:11px" onclick="assignDay(''+m.id+'',''+ds+'')">Zuweisen</button>';
+          }
+          html += '</div>';
+        }
+        html += '</div>'; // row
+      });
+
+      html += '</div>';
+      return html;
+    }
+>
