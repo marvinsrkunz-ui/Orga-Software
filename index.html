@@ -651,108 +651,126 @@
 </body>
 </html    function renderGanttDay(ds, date, matchSlots, showAssign) {
       const allDaySlots = getSlots(date.getDay());
-      const assigned = S.matchAssignments;
-      const assignedSlot = S.matchSlots || {}; // { matchId: "19:00" }
+      const assigned    = S.matchAssignments;
+      const matchSlotMap = S.matchSlots || {};
 
-      // Time axis: from first slot to last slot + 45min
       const firstSlot = allDaySlots[0];
       const lastSlot  = allDaySlots[allDaySlots.length-1];
       const [fh,fm]   = firstSlot.split(':').map(Number);
       const [lh,lm]   = lastSlot.split(':').map(Number);
       const startMin  = fh*60+fm;
-      const endMin    = lh*60+lm+45; // axis ends 45min after last slot
+      const endMin    = lh*60+lm+45;
       const totalMin  = endMin - startMin;
 
       function toPct(t) {
         const [h,m] = t.split(':').map(Number);
         return ((h*60+m) - startMin) / totalMin * 100;
       }
-
-      // Axis tick times (every 45 min = each slot boundary)
-      const axisTimes = [...allDaySlots];
-      // add end time
-      const endT = pad(Math.floor(endMin/60))+':'+pad(endMin%60);
-      if(!axisTimes.includes(endT)) axisTimes.push(endT);
+      const slotW = (45/totalMin)*100;
 
       const LABEL_W = 120;
-      const BTN_W = showAssign ? 140 : 0;
+      const BTN_W   = showAssign ? 130 : 0;
 
       let html = '<div style="margin-bottom:32px">';
-      html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px;padding:8px 14px;background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--radius);color:var(--blue-text)">'+fmtFull(date)+'</div>';
+      html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px;padding:8px 14px;'
+            + 'background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--radius);'
+            + 'color:var(--blue-text)">'+fmtFull(date)+'</div>';
 
-      // Axis: label area + bar area (same widths as match rows below)
-      html += '<div style="display:flex;align-items:flex-end;margin-bottom:0">';
+      // ── We render axis + rows inside ONE wrapper so bar width = axis width ──
+      // Structure per row: [LABEL_W px fixed] [flex:1 bar] [BTN_W px fixed]
+      // Axis labels: positioned INSIDE the same flex:1 container as the bars
+
+      // Axis label row
+      html += '<div style="display:flex;align-items:flex-end;margin-bottom:1px">';
       html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
-      html += '<div style="flex:1;position:relative;height:20px">';
-      axisTimes.forEach(t=>{
-        html += '<div style="position:absolute;left:'+toPct(t)+'%;font-size:10px;color:var(--muted);font-weight:600;transform:translateX(-50%);white-space:nowrap">'+t+'</div>';
+      html += '<div style="flex:1;position:relative;height:18px">';
+      // place each label so its LEFT edge = toPct(t)% — no translateX shift
+      allDaySlots.forEach(t=>{
+        const p = toPct(t);
+        html += '<div style="position:absolute;left:'+p+'%;font-size:10px;color:var(--muted);'
+              + 'font-weight:600;white-space:nowrap;transform:translateX(-50%)">'+t+'</div>';
       });
+      // end label
+      const endLabel = pad(Math.floor(endMin/60))+':'+pad(endMin%60);
+      html += '<div style="position:absolute;left:100%;font-size:10px;color:var(--muted);'
+            + 'font-weight:600;white-space:nowrap;transform:translateX(-50%)">'+endLabel+'</div>';
       html += '</div>';
       if(BTN_W) html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px"></div>';
       html += '</div>';
 
-      // Tick marks row
-      html += '<div style="display:flex;align-items:flex-end;margin-bottom:6px">';
+      // Tick row — same structure
+      html += '<div style="display:flex;margin-bottom:5px">';
       html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
-      html += '<div style="flex:1;position:relative;height:6px;border-top:1px solid var(--border2)">';
-      axisTimes.forEach(t=>{
-        html += '<div style="position:absolute;left:'+toPct(t)+'%;top:0;height:100%;width:1px;background:var(--border2)"></div>';
+      html += '<div style="flex:1;position:relative;height:6px;background:transparent;'
+            + 'border-top:1px solid var(--border2)">';
+      allDaySlots.forEach(t=>{
+        html += '<div style="position:absolute;left:'+toPct(t)+'%;top:0;height:100%;'
+              + 'width:1px;background:var(--border2)"></div>';
       });
+      html += '<div style="position:absolute;left:100%;top:0;height:100%;width:1px;background:var(--border2)"></div>';
       html += '</div>';
       if(BTN_W) html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px"></div>';
       html += '</div>';
 
-      // Match rows
+      // ── Match rows ──
       matchSlots.forEach(({m, slots})=>{
-        const isAss   = assigned[m.id]===ds;
-        const selSlot = assignedSlot[m.id]; // chosen time slot
-        const bgColor   = isAss ? '#dce8fb' : (m.type==='Einzel' ? '#d0eddc' : '#faeeda');
-        const borderCol = isAss ? '#3a6fd8' : (m.type==='Einzel' ? '#3dab6b' : '#c8860a');
+        const isAss    = assigned[m.id]===ds;
+        const selSlot  = matchSlotMap[m.id];
+        const bgColor  = isAss ? '#dce8fb' : (m.type==='Einzel' ? '#d0eddc' : '#faeeda');
+        const bdrCol   = isAss ? '#3a6fd8' : (m.type==='Einzel' ? '#3dab6b' : '#c8860a');
 
         html += '<div style="display:flex;align-items:center;margin-bottom:4px">';
 
         // Label
-        html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px;display:flex;align-items:center;gap:5px;padding-right:8px">';
+        html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px;display:flex;'
+              + 'align-items:center;gap:5px;padding-right:8px">';
         html += '<span class="tag '+(m.type==='Einzel'?'tag-blue':'tag-green')+'">'+m.id+'</span>';
-        html += '<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:68px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(' & ')[0].split(' ')[0]+'</span>';
+        html += '<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;'
+              + 'white-space:nowrap;max-width:65px" title="'+m.p1+' vs '+m.p2+'">'
+              + m.p1.split(' & ')[0].split(' ')[0]+'</span>';
         if(isAss) html += '<span style="font-size:10px;color:#3a6fd8;font-weight:700">✓</span>';
         html += '</div>';
 
-        // Bar
-        html += '<div style="flex:1;position:relative;height:24px;background:var(--bg);border-radius:3px;border:1px solid var(--border)">';
+        // Bar — flex:1, same as axis container
+        html += '<div style="flex:1;position:relative;height:24px;background:var(--bg);'
+              + 'border-radius:3px;border:1px solid var(--border);overflow:hidden">';
 
-        // Grid lines at each slot boundary
-        axisTimes.forEach(t=>{
-          html += '<div style="position:absolute;left:'+toPct(t)+'%;top:0;bottom:0;width:1px;background:var(--border2)"></div>';
+        // Grid lines at slot boundaries (same positions as axis labels)
+        allDaySlots.forEach(t=>{
+          html += '<div style="position:absolute;left:'+toPct(t)+'%;top:0;bottom:0;'
+                + 'width:1px;background:var(--border2)"></div>';
         });
+        html += '<div style="position:absolute;left:100%;top:0;bottom:0;width:1px;background:var(--border2)"></div>';
 
-        // Availability blocks (each 45min slot)
+        // Availability blocks
         slots.forEach(t=>{
-          const left  = toPct(t);
-          const width = (45/totalMin)*100;
-          const isSelected = selSlot===t && isAss;
-          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:1px;bottom:1px;background:'+bgColor+';border:1px solid '+borderCol+';border-radius:2px;box-sizing:border-box;'+(isSelected?'outline:2px solid #3a6fd8;':'')+';cursor:'+(showAssign?'pointer':'default')+'"';
-          if(showAssign) html += ' onclick="pickSlot(''+m.id+'',''+ds+'',''+t+'')" title="'+t+' Uhr wählen"';
+          const left    = toPct(t);
+          const isSel   = isAss && selSlot===t;
+          html += '<div style="position:absolute;left:'+left+'%;width:'+slotW+'%;top:1px;bottom:1px;'
+                + 'background:'+bgColor+';border:1px solid '+bdrCol+';border-radius:2px;'
+                + 'box-sizing:border-box;cursor:'+(showAssign?'pointer':'default')+';'
+                + (isSel?'outline:2px solid #3a6fd8;outline-offset:-1px;':'')+'"';
+          if(showAssign){
+            html += ' onclick="pickSlot(''+m.id+'',''+ds+'',''+t+'')"'
+                  + ' title="'+t+' Uhr wählen"';
+          }
           html += '></div>';
         });
 
-        // Selected slot highlight
-        if(isAss && selSlot){
-          const left  = toPct(selSlot);
-          const width = (45/totalMin)*100;
-          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:0;bottom:0;border:2px solid #3a6fd8;border-radius:3px;pointer-events:none"></div>';
-        }
-
         html += '</div>'; // bar
 
-        // Admin controls
+        // Admin button
         if(showAssign){
-          html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px;padding-left:8px;display:flex;gap:4px;align-items:center">';
+          html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px;padding-left:8px;'
+                + 'display:flex;gap:5px;align-items:center">';
           if(isAss){
-            html += '<span style="font-size:11px;color:#3a6fd8;font-weight:600">'+(selSlot?selSlot+' Uhr':'')+'</span>';
-            html += '<button class="btn btn-sm" style="background:#c0392b;color:#fff;border-color:#c0392b;font-size:11px;padding:3px 7px" onclick="unassignMatch(''+m.id+'')">✕</button>';
+            html += '<span style="font-size:11px;color:#3a6fd8;font-weight:600;white-space:nowrap">'
+                  + (selSlot?selSlot+' Uhr':'zugewiesen')+'</span>';
+            html += '<button class="btn btn-sm" style="background:#c0392b;color:#fff;'
+                  + 'border-color:#c0392b;font-size:11px;padding:3px 6px" '
+                  + 'onclick="unassignMatch(''+m.id+'')">✕</button>';
           } else {
-            html += '<span style="font-size:11px;color:var(--faint)">Slot anklicken</span>';
+            html += '<span style="font-size:11px;color:var(--faint)">← Slot wählen</span>';
           }
           html += '</div>';
         }
