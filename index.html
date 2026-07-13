@@ -179,7 +179,7 @@
       else { startH=18; endH=23; }
       for(let h=startH; h<=endH; h++){
         slots.push(pad(h)+":00");
-        if(h < endH) slots.push(pad(h)+":30");
+        slots.push(pad(h)+":30");
       }
       return slots;
     }
@@ -256,7 +256,7 @@
     function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
     async function doLogin(){
       const p=document.getElementById("lp").value;
-      if(loginRole==="admin"&&p==="qwertz"){
+      if(loginRole==="admin"&&p==="jaaxjaax"){
         currentUser="admin"; await loadData(); setView("admin");
       } else if(loginRole==="spieler"){
         document.getElementById("lp").disabled=true;
@@ -410,6 +410,7 @@
       const idx = arr.indexOf(time);
       if(idx>=0) arr.splice(idx,1); else arr.push(time);
       rSpielerAvail();
+      push();
     }
 
     function saveAvail(){ push(); }
