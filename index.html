@@ -124,7 +124,7 @@
       settings: { startDate:"", startTime:"18:00", spielerPassword:"", dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"] },
       teams: { team1:{name:"Team A",players:["","","","","","","",""]}, team2:{name:"Team B",players:["","","","","","","",""]} },
       doubles: { team1:[["",""],["",""],["",""],["",""]], team2:[["",""],["",""],["",""],["",""]] },
-      schedule:[], matchAssignments:{},
+      schedule:[], matchAssignments:{}, matchSlots:{},
       availability:{} // { "spielername": { "2024-01-15": ["18:00","19:00",...] } }
     };
 
@@ -144,6 +144,7 @@
             S.doubles          = Object.assign({}, DEF.doubles, d.doubles || {});
             S.schedule         = d.schedule || [];
             S.matchAssignments = d.matchAssignments || {};
+            S.matchSlots       = d.matchSlots || {};
             S.availability     = d.availability || {};
           }
         }
@@ -156,7 +157,7 @@
         const r = await fetch(BIN_URL, {
           method: "PUT",
           headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY, "X-Access-Key": API_KEY },
-          body: JSON.stringify({ settings:S.settings, teams:S.teams, doubles:S.doubles, schedule:S.schedule, matchAssignments:S.matchAssignments, availability:S.availability })
+          body: JSON.stringify({ settings:S.settings, teams:S.teams, doubles:S.doubles, schedule:S.schedule, matchAssignments:S.matchAssignments, matchSlots:S.matchSlots, availability:S.availability })
         });
         if (!r.ok) throw new Error("Status " + r.status);
         toast("Gespeichert ✓");
@@ -172,13 +173,14 @@
 
     // Uhrzeiten je Wochentag
     function getSlots(dayIdx) {
-      // 0=So, 6=Sa: 12-23, Mo-Fr: 17-23
+      // 45-min slots: 0=So, 6=Sa: 12:00-, Mo-Fr: 17:00-
       const slots = [];
-      let startH = (dayIdx === 0 || dayIdx === 6) ? 12 : 17;
-      let endH = 23;
-      for(let h=startH; h<=endH; h++){
-        slots.push(pad(h)+":00");
-        if(h < endH) slots.push(pad(h)+":30");
+      let startMin = (dayIdx === 0 || dayIdx === 6) ? 12*60 : 17*60;
+      let endMin = 23*60; // last slot starts at 23:00
+      for(let m=startMin; m<=endMin; m+=45){
+        const h = Math.floor(m/60);
+        const min = m%60;
+        slots.push(pad(h)+':'+pad(min));
       }
       return slots;
     }
@@ -618,7 +620,7 @@
           let timeStr = '–';
           if(ds){
             const possible = getPossibleSlots(m).find(p=>p.ds===ds);
-            if(possible && possible.slots.length>0) timeStr = dn(d).slice(0,2)+'. '+fmt(d)+', '+possible.slots[0]+' Uhr';
+            const fixedSlot = (S.matchSlots||{})[m.id]; if(fixedSlot) timeStr = dn(d).slice(0,2)+'. '+fmt(d)+', '+fixedSlot+' Uhr'; else if(possible && possible.slots.length>0) timeStr = dn(d).slice(0,2)+'. '+fmt(d)+', '+possible.slots[0]+' Uhr';
             else timeStr = dn(d).slice(0,2)+'. '+fmt(d);
           }
           t+='<tr><td><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span></td>';
@@ -632,111 +634,125 @@
         +'<section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
     }
 
+    function pickSlot(mid, day, time){
+      if(!S.matchSlots) S.matchSlots={};
+      S.matchAssignments[mid] = day;
+      S.matchSlots[mid] = time;
+      push().then(()=>rAdminPlan());
+    }
+    function unassignMatch(mid){
+      delete S.matchAssignments[mid];
+      delete S.matchSlots[mid];
+      push().then(()=>rAdminPlan());
+    }
+
     rLogin();
   </script>
 </body>
 </html    function renderGanttDay(ds, date, matchSlots, showAssign) {
       const allDaySlots = getSlots(date.getDay());
       const assigned = S.matchAssignments;
-      const hours = allDaySlots.filter(t=>t.endsWith(':00'));
-      const firstH = parseInt(hours[0]);
-      const lastH  = parseInt(hours[hours.length-1]);
-      const totalMin = (lastH + 1 - firstH) * 60;
+      const assignedSlot = S.matchSlots || {}; // { matchId: "19:00" }
+
+      // Time axis: from first slot to last slot + 45min
+      const firstSlot = allDaySlots[0];
+      const lastSlot  = allDaySlots[allDaySlots.length-1];
+      const [fh,fm]   = firstSlot.split(':').map(Number);
+      const [lh,lm]   = lastSlot.split(':').map(Number);
+      const startMin  = fh*60+fm;
+      const endMin    = lh*60+lm+45; // axis ends 45min after last slot
+      const totalMin  = endMin - startMin;
 
       function toPct(t) {
         const [h,m] = t.split(':').map(Number);
-        return ((h - firstH)*60 + m) / totalMin * 100;
+        return ((h*60+m) - startMin) / totalMin * 100;
       }
+
+      // Axis tick times (every 45 min = each slot boundary)
+      const axisTimes = [...allDaySlots];
+      // add end time
+      const endT = pad(Math.floor(endMin/60))+':'+pad(endMin%60);
+      if(!axisTimes.includes(endT)) axisTimes.push(endT);
 
       const LABEL_W = 120;
-      const BTN_W = showAssign ? 100 : 0;
+      const BTN_W = showAssign ? 140 : 0;
 
       let html = '<div style="margin-bottom:32px">';
-
-      // Day header
       html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px;padding:8px 14px;background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--radius);color:var(--blue-text)">'+fmtFull(date)+'</div>';
 
-      // Wrapper: label + bar (+ optional btn) all in same row-like container
-      // Use a table-like approach so bar width is always consistent
-      const barStyle = 'margin-left:'+LABEL_W+'px;'+(showAssign?'margin-right:'+BTN_W+'px;':'')+'position:relative;';
-
-      // Axis labels row
-      html += '<div style="'+barStyle+'height:16px;margin-bottom:2px">';
-      for(let h=firstH; h<=lastH+1; h++){
-        const p = ((h-firstH)*60)/totalMin*100;
-        html += '<div style="position:absolute;left:'+p+'%;font-size:10px;color:var(--muted);font-weight:600;transform:translateX(-50%);white-space:nowrap">'+pad(h)+':00</div>';
-      }
+      // Axis: label area + bar area (same widths as match rows below)
+      html += '<div style="display:flex;align-items:flex-end;margin-bottom:0">';
+      html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
+      html += '<div style="flex:1;position:relative;height:20px">';
+      axisTimes.forEach(t=>{
+        html += '<div style="position:absolute;left:'+toPct(t)+'%;font-size:10px;color:var(--muted);font-weight:600;transform:translateX(-50%);white-space:nowrap">'+t+'</div>';
+      });
+      html += '</div>';
+      if(BTN_W) html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px"></div>';
       html += '</div>';
 
-      // Tick row
-      html += '<div style="'+barStyle+'height:6px;border-top:1px solid var(--border2);margin-bottom:6px">';
-      for(let h=firstH; h<=lastH+1; h++){
-        const p = ((h-firstH)*60)/totalMin*100;
-        html += '<div style="position:absolute;left:'+p+'%;top:0;height:100%;width:1px;background:var(--border2)"></div>';
-        if(h<=lastH){
-          const ph = ((h-firstH)*60+30)/totalMin*100;
-          html += '<div style="position:absolute;left:'+ph+'%;top:0;height:60%;width:1px;background:var(--border)"></div>';
-        }
-      }
+      // Tick marks row
+      html += '<div style="display:flex;align-items:flex-end;margin-bottom:6px">';
+      html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
+      html += '<div style="flex:1;position:relative;height:6px;border-top:1px solid var(--border2)">';
+      axisTimes.forEach(t=>{
+        html += '<div style="position:absolute;left:'+toPct(t)+'%;top:0;height:100%;width:1px;background:var(--border2)"></div>';
+      });
+      html += '</div>';
+      if(BTN_W) html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px"></div>';
       html += '</div>';
 
       // Match rows
       matchSlots.forEach(({m, slots})=>{
-        const isAss = assigned[m.id]===ds;
+        const isAss   = assigned[m.id]===ds;
+        const selSlot = assignedSlot[m.id]; // chosen time slot
         const bgColor   = isAss ? '#dce8fb' : (m.type==='Einzel' ? '#d0eddc' : '#faeeda');
         const borderCol = isAss ? '#3a6fd8' : (m.type==='Einzel' ? '#3dab6b' : '#c8860a');
 
         html += '<div style="display:flex;align-items:center;margin-bottom:4px">';
 
-        // Label (fixed width)
+        // Label
         html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px;display:flex;align-items:center;gap:5px;padding-right:8px">';
         html += '<span class="tag '+(m.type==='Einzel'?'tag-blue':'tag-green')+'">'+m.id+'</span>';
         html += '<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:68px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(' & ')[0].split(' ')[0]+'</span>';
         if(isAss) html += '<span style="font-size:10px;color:#3a6fd8;font-weight:700">✓</span>';
         html += '</div>';
 
-        // Bar (flex:1 so it fills remaining space equally for both admin and spieler)
+        // Bar
         html += '<div style="flex:1;position:relative;height:24px;background:var(--bg);border-radius:3px;border:1px solid var(--border)">';
 
-        // Grid lines
-        for(let h=firstH; h<=lastH+1; h++){
-          const p = ((h-firstH)*60)/totalMin*100;
-          html += '<div style="position:absolute;left:'+p+'%;top:0;bottom:0;width:1px;background:var(--border2)"></div>';
-          if(h<=lastH){
-            const ph = ((h-firstH)*60+30)/totalMin*100;
-            html += '<div style="position:absolute;left:'+ph+'%;top:0;bottom:0;width:1px;background:var(--border)"></div>';
-          }
-        }
-
-        // Merge slots into ranges
-        let ranges=[], rangeStart=null;
-        allDaySlots.forEach((t,i)=>{
-          if(slots.includes(t)){ if(rangeStart===null) rangeStart=t; }
-          else { if(rangeStart!==null){ ranges.push({s:rangeStart,e:allDaySlots[i-1]}); rangeStart=null; } }
+        // Grid lines at each slot boundary
+        axisTimes.forEach(t=>{
+          html += '<div style="position:absolute;left:'+toPct(t)+'%;top:0;bottom:0;width:1px;background:var(--border2)"></div>';
         });
-        if(rangeStart!==null) ranges.push({s:rangeStart,e:allDaySlots[allDaySlots.length-1]});
 
-        ranges.forEach(({s,e})=>{
-          const left = toPct(s);
-          const [eh,em] = e.split(':').map(Number);
-          const endMin = (eh-firstH)*60+em+30;
-          const right = Math.min(endMin/totalMin*100, 100);
-          const width = right - left;
-          const clickable = showAssign && !isAss;
-          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:1px;bottom:1px;background:'+bgColor+';border:1px solid '+borderCol+';border-radius:2px;cursor:'+(clickable?'pointer':'default')+'"';
-          if(clickable) html += ' onclick="assignDay(''+m.id+'',''+ds+'')" title="'+m.id+': '+s+' Uhr zuweisen"';
+        // Availability blocks (each 45min slot)
+        slots.forEach(t=>{
+          const left  = toPct(t);
+          const width = (45/totalMin)*100;
+          const isSelected = selSlot===t && isAss;
+          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:1px;bottom:1px;background:'+bgColor+';border:1px solid '+borderCol+';border-radius:2px;box-sizing:border-box;'+(isSelected?'outline:2px solid #3a6fd8;':'')+';cursor:'+(showAssign?'pointer':'default')+'"';
+          if(showAssign) html += ' onclick="pickSlot(''+m.id+'',''+ds+'',''+t+'')" title="'+t+' Uhr wählen"';
           html += '></div>';
         });
 
+        // Selected slot highlight
+        if(isAss && selSlot){
+          const left  = toPct(selSlot);
+          const width = (45/totalMin)*100;
+          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:0;bottom:0;border:2px solid #3a6fd8;border-radius:3px;pointer-events:none"></div>';
+        }
+
         html += '</div>'; // bar
 
-        // Assign button (fixed width, outside flex:1 bar)
+        // Admin controls
         if(showAssign){
-          html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px;padding-left:8px">';
+          html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px;padding-left:8px;display:flex;gap:4px;align-items:center">';
           if(isAss){
-            html += '<button class="btn btn-sm" style="background:#3a6fd8;color:#fff;border-color:#3a6fd8;font-size:11px;white-space:nowrap;padding:3px 7px" onclick="assignDay(''+m.id+'','')">✓ Fix</button>';
+            html += '<span style="font-size:11px;color:#3a6fd8;font-weight:600">'+(selSlot?selSlot+' Uhr':'')+'</span>';
+            html += '<button class="btn btn-sm" style="background:#c0392b;color:#fff;border-color:#c0392b;font-size:11px;padding:3px 7px" onclick="unassignMatch(''+m.id+'')">✕</button>';
           } else {
-            html += '<button class="btn btn-sm" style="font-size:11px;padding:3px 7px" onclick="assignDay(''+m.id+'',''+ds+'')">Zuweisen</button>';
+            html += '<span style="font-size:11px;color:var(--faint)">Slot anklicken</span>';
           }
           html += '</div>';
         }
