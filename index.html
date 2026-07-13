@@ -578,7 +578,7 @@
         html += '<p class="empty-state">Noch keine Verfügbarkeiten eingetragen oder kein Startdatum gesetzt.</p>';
       } else {
         byDay.forEach(({ds,date,matches})=>{
-          html += renderGanttDay(ds, date, matches);
+          html += renderGanttDay(ds, date, matches, true);
         });
       }
       html += '</section></main>';
@@ -600,7 +600,7 @@
         html += '<p class="empty-state">Noch keine gemeinsamen Verfügbarkeiten vorhanden.</p>';
       } else {
         byDay.forEach(({ds,date,matches})=>{
-          html += renderGanttDay(ds, date, matches);
+          html += renderGanttDay(ds, date, matches, false);
         });
       }
       html += '</section></main>';
@@ -611,12 +611,20 @@
     function rSpiele(){
       const matches=buildMatches();
       function tbl(list){
-        let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>Datum</th></tr></thead><tbody>';
+        let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>Termin</th></tr></thead><tbody>';
         list.forEach(m=>{
-          const ds=S.matchAssignments[m.id],d=ds?new Date(ds):null;
+          const ds=S.matchAssignments[m.id];
+          const d=ds?new Date(ds):null;
+          // Find first common slot for that day
+          let timeStr = '–';
+          if(ds){
+            const possible = getPossibleSlots(m).find(p=>p.ds===ds);
+            if(possible && possible.slots.length>0) timeStr = dn(d).slice(0,2)+'. '+fmt(d)+' ab '+possible.slots[0]+' Uhr';
+            else timeStr = dn(d).slice(0,2)+'. '+fmt(d);
+          }
           t+='<tr><td><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span></td>';
           t+='<td>'+m.p1+'</td><td class="vs-cell">vs</td><td>'+m.p2+'</td>';
-          t+='<td class="date-cell">'+(d?dn(d).slice(0,2)+". "+fmt(d):"–")+'</td></tr>';
+          t+='<td class="date-cell" style="white-space:nowrap">'+timeStr+'</td></tr>';
         });
         return t+'</tbody></table>';
       }
