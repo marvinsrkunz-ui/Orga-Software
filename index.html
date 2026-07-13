@@ -641,36 +641,35 @@
       const hours = allDaySlots.filter(t=>t.endsWith(':00'));
       const firstH = parseInt(hours[0]);
       const lastH  = parseInt(hours[hours.length-1]);
-      const totalMin = (lastH + 1 - firstH) * 60; // +1 because axis goes to lastH+1
+      const totalMin = (lastH + 1 - firstH) * 60;
 
       function toPct(t) {
         const [h,m] = t.split(':').map(Number);
         return ((h - firstH)*60 + m) / totalMin * 100;
       }
 
-      const LABEL_W = 130;
+      const LABEL_W = 120;
+      const BTN_W = showAssign ? 100 : 0;
+
       let html = '<div style="margin-bottom:32px">';
 
       // Day header
       html += '<div style="font-size:15px;font-weight:700;margin-bottom:14px;padding:8px 14px;background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--radius);color:var(--blue-text)">'+fmtFull(date)+'</div>';
 
-      // Axis container (aligned with bar area)
-      html += '<div style="display:flex;align-items:flex-end;margin-bottom:0">';
-      html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
-      html += '<div style="flex:1;position:relative;height:18px">';
-      // Hour labels — positioned absolutely so they align exactly
+      // Wrapper: label + bar (+ optional btn) all in same row-like container
+      // Use a table-like approach so bar width is always consistent
+      const barStyle = 'margin-left:'+LABEL_W+'px;'+(showAssign?'margin-right:'+BTN_W+'px;':'')+'position:relative;';
+
+      // Axis labels row
+      html += '<div style="'+barStyle+'height:16px;margin-bottom:2px">';
       for(let h=firstH; h<=lastH+1; h++){
         const p = ((h-firstH)*60)/totalMin*100;
         html += '<div style="position:absolute;left:'+p+'%;font-size:10px;color:var(--muted);font-weight:600;transform:translateX(-50%);white-space:nowrap">'+pad(h)+':00</div>';
       }
       html += '</div>';
-      if(showAssign) html += '<div style="width:96px;min-width:96px"></div>';
-      html += '</div>';
 
       // Tick row
-      html += '<div style="display:flex;align-items:flex-end;margin-bottom:6px">';
-      html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px"></div>';
-      html += '<div style="flex:1;position:relative;height:6px;background:var(--bg);border-top:1px solid var(--border2)">';
+      html += '<div style="'+barStyle+'height:6px;border-top:1px solid var(--border2);margin-bottom:6px">';
       for(let h=firstH; h<=lastH+1; h++){
         const p = ((h-firstH)*60)/totalMin*100;
         html += '<div style="position:absolute;left:'+p+'%;top:0;height:100%;width:1px;background:var(--border2)"></div>';
@@ -679,8 +678,6 @@
           html += '<div style="position:absolute;left:'+ph+'%;top:0;height:60%;width:1px;background:var(--border)"></div>';
         }
       }
-      html += '</div>';
-      if(showAssign) html += '<div style="width:96px;min-width:96px"></div>';
       html += '</div>';
 
       // Match rows
@@ -691,17 +688,17 @@
 
         html += '<div style="display:flex;align-items:center;margin-bottom:4px">';
 
-        // Label
-        html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px;display:flex;align-items:center;gap:6px;padding-right:10px">';
+        // Label (fixed width)
+        html += '<div style="width:'+LABEL_W+'px;min-width:'+LABEL_W+'px;display:flex;align-items:center;gap:5px;padding-right:8px">';
         html += '<span class="tag '+(m.type==='Einzel'?'tag-blue':'tag-green')+'">'+m.id+'</span>';
-        html += '<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:75px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(' & ')[0].split(' ')[0]+'</span>';
+        html += '<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:68px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(' & ')[0].split(' ')[0]+'</span>';
         if(isAss) html += '<span style="font-size:10px;color:#3a6fd8;font-weight:700">✓</span>';
         html += '</div>';
 
-        // Bar
+        // Bar (flex:1 so it fills remaining space equally for both admin and spieler)
         html += '<div style="flex:1;position:relative;height:24px;background:var(--bg);border-radius:3px;border:1px solid var(--border)">';
 
-        // Grid lines inside bar
+        // Grid lines
         for(let h=firstH; h<=lastH+1; h++){
           const p = ((h-firstH)*60)/totalMin*100;
           html += '<div style="position:absolute;left:'+p+'%;top:0;bottom:0;width:1px;background:var(--border2)"></div>';
@@ -711,7 +708,7 @@
           }
         }
 
-        // Merge consecutive slots into ranges then draw
+        // Merge slots into ranges
         let ranges=[], rangeStart=null;
         allDaySlots.forEach((t,i)=>{
           if(slots.includes(t)){ if(rangeStart===null) rangeStart=t; }
@@ -721,29 +718,29 @@
 
         ranges.forEach(({s,e})=>{
           const left = toPct(s);
-          // end of last slot = slot start + 30min
           const [eh,em] = e.split(':').map(Number);
           const endMin = (eh-firstH)*60+em+30;
           const right = Math.min(endMin/totalMin*100, 100);
           const width = right - left;
           const clickable = showAssign && !isAss;
-          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:1px;bottom:1px;background:'+bgColor+';border:1px solid '+borderCol+';border-radius:2px;box-sizing:border-box;cursor:'+(clickable?'pointer':'default')+'"';
-          if(clickable) html += ' onclick="assignDay(''+m.id+'',''+ds+'')" title="'+m.id+' zuweisen: '+s+' Uhr"';
+          html += '<div style="position:absolute;left:'+left+'%;width:'+width+'%;top:1px;bottom:1px;background:'+bgColor+';border:1px solid '+borderCol+';border-radius:2px;cursor:'+(clickable?'pointer':'default')+'"';
+          if(clickable) html += ' onclick="assignDay(''+m.id+'',''+ds+'')" title="'+m.id+': '+s+' Uhr zuweisen"';
           html += '></div>';
         });
 
         html += '</div>'; // bar
 
-        // Assign button
+        // Assign button (fixed width, outside flex:1 bar)
         if(showAssign){
-          html += '<div style="width:96px;min-width:96px;padding-left:8px">';
+          html += '<div style="width:'+BTN_W+'px;min-width:'+BTN_W+'px;padding-left:8px">';
           if(isAss){
-            html += '<button class="btn btn-sm" style="background:#3a6fd8;color:#fff;border-color:#3a6fd8;font-size:11px;white-space:nowrap" onclick="assignDay(''+m.id+'','')">✓ Zugewiesen</button>';
+            html += '<button class="btn btn-sm" style="background:#3a6fd8;color:#fff;border-color:#3a6fd8;font-size:11px;white-space:nowrap;padding:3px 7px" onclick="assignDay(''+m.id+'','')">✓ Fix</button>';
           } else {
-            html += '<button class="btn btn-sm" style="font-size:11px" onclick="assignDay(''+m.id+'',''+ds+'')">Zuweisen</button>';
+            html += '<button class="btn btn-sm" style="font-size:11px;padding:3px 7px" onclick="assignDay(''+m.id+'',''+ds+'')">Zuweisen</button>';
           }
           html += '</div>';
         }
+
         html += '</div>'; // row
       });
 
