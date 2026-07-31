@@ -221,7 +221,7 @@ function pad(n){return n<10?"0"+n:String(n);}
 function getSlots(dayIdx){
   const slots=[];
   let startMin=(dayIdx===0||dayIdx===6)?12*60:17*60;
-  for(let m=startMin;m<=23*60;m+=45) slots.push(pad(Math.floor(m/60))+":"+pad(m%60));
+  for(let m=startMin;m<=23*60;m+=30) slots.push(pad(Math.floor(m/60))+":"+pad(m%60));
   return slots;
 }
 
