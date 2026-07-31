@@ -15,10 +15,10 @@
       --r:8px;--rl:12px;
     }
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;color:var(--text);background:var(--bg);min-height:100vh}
-    .topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;padding:0 24px;height:56px}
+    .topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 16px;height:56px;overflow-x:auto}
     .topbar-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
-    .topbar-nav{display:flex;gap:2px;flex:1}
-    .nav-btn{padding:6px 14px;border:none;background:none;cursor:pointer;font-size:14px;font-family:inherit;color:var(--muted);border-radius:var(--r);border-bottom:2px solid transparent}
+    .topbar-nav{display:flex;gap:0;flex:1;overflow-x:auto}
+    .nav-btn{padding:6px 10px;border:none;background:none;cursor:pointer;font-size:13px;font-family:inherit;color:var(--muted);border-radius:var(--r);border-bottom:2px solid transparent;white-space:nowrap}
     .nav-btn:hover{color:var(--text);background:var(--bg)}
     .nav-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
     .topbar-user{display:flex;align-items:center;gap:8px}
