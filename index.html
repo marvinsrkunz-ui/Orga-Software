@@ -116,23 +116,41 @@ const API_KEY = "$2a$10$3LtezdRQg2Ne0/9WICvsXucZI5a/LIQeQt4OH7D3eYipzjqhEDDn6";
 const BIN_URL = "https://api.jsonbin.io/v3/b/"+BIN_ID;
 
 const TIMEZONES = [
-  {label:"Berlin (Standard)",   value:"Europe/Berlin"},
-  {label:"London",              value:"Europe/London"},
-  {label:"Paris",               value:"Europe/Paris"},
-  {label:"Amsterdam",           value:"Europe/Amsterdam"},
-  {label:"Zürich",              value:"Europe/Zurich"},
-  {label:"New York",            value:"America/New_York"},
-  {label:"Los Angeles",         value:"America/Los_Angeles"},
-  {label:"Chicago",             value:"America/Chicago"},
-  {label:"Toronto",             value:"America/Toronto"},
-  {label:"São Paulo",           value:"America/Sao_Paulo"},
-  {label:"Dubai",               value:"Asia/Dubai"},
-  {label:"Mumbai",              value:"Asia/Kolkata"},
-  {label:"Bangkok",             value:"Asia/Bangkok"},
-  {label:"Singapur",            value:"Asia/Singapore"},
-  {label:"Tokio",               value:"Asia/Tokyo"},
-  {label:"Sydney",              value:"Australia/Sydney"},
-  {label:"Auckland",            value:"Pacific/Auckland"},
+  // Europa
+  {label:"Berlin (Standard)",        value:"Europe/Berlin"},
+  {label:"London / Dublin / Lissabon",value:"Europe/London"},
+  {label:"Paris / Madrid / Rom",     value:"Europe/Paris"},
+  {label:"Amsterdam / Brüssel",      value:"Europe/Amsterdam"},
+  {label:"Zürich / Bern",            value:"Europe/Zurich"},
+  {label:"Wien",                     value:"Europe/Vienna"},
+  {label:"Warschau / Prag / Budapest",value:"Europe/Warsaw"},
+  {label:"Sofia / Bukarest / Athen / Helsinki",value:"Europe/Sofia"},
+  {label:"Kiew / Tallinn / Riga / Vilnius",value:"Europe/Kiev"},
+  {label:"Moskau / Istanbul",        value:"Europe/Moscow"},
+  {label:"Stockholm / Oslo / Kopenhagen",value:"Europe/Stockholm"},
+  {label:"Helsinki",                 value:"Europe/Helsinki"},
+  {label:"Lissabon",                 value:"Europe/Lisbon"},
+  {label:"Athen",                    value:"Europe/Athens"},
+  // Amerika
+  {label:"New York / Miami / Toronto",value:"America/New_York"},
+  {label:"Chicago / Dallas",         value:"America/Chicago"},
+  {label:"Denver / Phoenix",         value:"America/Denver"},
+  {label:"Los Angeles / Vancouver",  value:"America/Los_Angeles"},
+  {label:"São Paulo / Buenos Aires", value:"America/Sao_Paulo"},
+  {label:"Mexico City",              value:"America/Mexico_City"},
+  {label:"Bogotá / Lima",            value:"America/Bogota"},
+  // Asien & Naher Osten
+  {label:"Dubai / Abu Dhabi",        value:"Asia/Dubai"},
+  {label:"Mumbai / Neu-Delhi",       value:"Asia/Kolkata"},
+  {label:"Bangkok / Jakarta",        value:"Asia/Bangkok"},
+  {label:"Singapur / Kuala Lumpur",  value:"Asia/Singapore"},
+  {label:"Tokio / Seoul",            value:"Asia/Tokyo"},
+  {label:"Shanghai / Peking",        value:"Asia/Shanghai"},
+  {label:"Hongkong",                 value:"Asia/Hong_Kong"},
+  // Australien & Pazifik
+  {label:"Sydney / Melbourne",       value:"Australia/Sydney"},
+  {label:"Perth",                    value:"Australia/Perth"},
+  {label:"Auckland",                 value:"Pacific/Auckland"},
 ];
 
 const DEF = {
