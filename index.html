@@ -121,7 +121,7 @@ const API_KEY = "$2a$10$3LtezdRQg2Ne0/9WICvsXucZI5a/LIQeQt4OH7D3eYipzjqhEDDn6";
 const BIN_URL = "https://api.jsonbin.io/v3/b/"+BIN_ID;
 
 const DEF = {
-  settings:{startDate:"",spielerPassword:"",dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"]},
+  settings:{startDate:"",spielerPassword:"",dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"],timezone:"Europe/Berlin"},
   teams:{team1:{name:"Team A",players:["","","","","","","",""]},team2:{name:"Team B",players:["","","","","","","",""]}},
   doubles:{team1:[["",""],["",""],["",""],["",""]],team2:[["",""],["",""],["",""],["",""]]},
   schedule:[],matchAssignments:{},matchSlots:{},availability:{}
@@ -129,6 +129,7 @@ const DEF = {
 
 let S=JSON.parse(JSON.stringify(DEF));
 let currentUser=null,currentView="login",loginRole=null,dragSrc=null,selectedSpieler=null,selectedDoppel=null;
+let userTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Berlin";
 
 async function loadData(){
   try{
@@ -165,6 +166,61 @@ const dn=d=>DAY[d.getDay()];
 const fmt=d=>d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});
 const fmtFull=d=>d.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
 function pad(n){return n<10?"0"+n:String(n);}
+
+// Convert a time string "HH:MM" from Berlin time to user's local timezone
+function berlinToLocal(timeStr, dateStr) {
+  try {
+    const [h,m] = timeStr.split(':').map(Number);
+    // Create date in Berlin timezone
+    const berlinStr = dateStr+'T'+pad(h)+':'+pad(m)+':00';
+    const berlinDate = new Date(new Date(berlinStr).toLocaleString('en-US', {timeZone:'Europe/Berlin'}));
+    const diff = new Date(berlinStr) - berlinDate;
+    const utc = new Date(new Date(berlinStr).getTime() + new Date().getTimezoneOffset()*60000 + diff);
+    // Convert to user timezone
+    const localStr = new Date(berlinStr).toLocaleTimeString('de-DE', {timeZone: userTimezone, hour:'2-digit', minute:'2-digit'});
+    return localStr;
+  } catch(e) { return timeStr; }
+}
+
+// Convert slot time from Berlin to user timezone for display
+function slotToLocal(slot, dateStr) {
+  if(userTimezone === 'Europe/Berlin') return slot;
+  try {
+    const [h,m] = slot.split(':').map(Number);
+    const dt = new Date(dateStr+'T'+pad(h)+':'+pad(m)+':00');
+    // Interpret as Berlin time
+    const berlinOffset = getBerlinOffset(dt);
+    const utcMs = dt.getTime() - berlinOffset;
+    const localDt = new Date(utcMs);
+    const localStr = localDt.toLocaleTimeString('de-DE', {timeZone: userTimezone, hour:'2-digit', minute:'2-digit'});
+    return localStr;
+  } catch(e) { return slot; }
+}
+
+function getBerlinOffset(dt) {
+  // Get Berlin UTC offset in ms for a given date
+  const berlinStr = dt.toLocaleString('en-US', {timeZone:'Europe/Berlin', hour12:false, year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const berlinDt = new Date(berlinStr.replace(/(\d+)\/(\d+)\/(\d+),?\s/, '$3-$1-$2T'));
+  return dt.getTime() - berlinDt.getTime();
+}
+
+const TIMEZONES = [
+  {label:"Berlin (Standard)", value:"Europe/Berlin"},
+  {label:"London", value:"Europe/London"},
+  {label:"Paris", value:"Europe/Paris"},
+  {label:"New York", value:"America/New_York"},
+  {label:"Los Angeles", value:"America/Los_Angeles"},
+  {label:"Chicago", value:"America/Chicago"},
+  {label:"Toronto", value:"America/Toronto"},
+  {label:"São Paulo", value:"America/Sao_Paulo"},
+  {label:"Dubai", value:"Asia/Dubai"},
+  {label:"Mumbai", value:"Asia/Kolkata"},
+  {label:"Bangkok", value:"Asia/Bangkok"},
+  {label:"Singapore", value:"Asia/Singapore"},
+  {label:"Tokyo", value:"Asia/Tokyo"},
+  {label:"Sydney", value:"Australia/Sydney"},
+  {label:"Auckland", value:"Pacific/Auckland"},
+];
 
 function getSlots(dayIdx){
   // 45-min slots; Sa/So from 12:00, Mo-Fr from 17:00
@@ -266,6 +322,10 @@ function rLogin(){
     +'<button class="role-btn '+(loginRole==="admin"?"active":"")+('" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>')
     +'<button class="role-btn '+(loginRole==="spieler"?"active":"")+('" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>')
     +'</div>'
+    +'<div style="margin-bottom:14px"><label style="display:block;font-size:13px;color:var(--muted);margin-bottom:4px">Deine Zeitzone</label>'
+    +'<select id="tz-sel" onchange="userTimezone=this.value" style="width:100%">'
+    +TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?' selected':'')+'>'+tz.label+'</option>').join('')
+    +'</select></div>'
     +'<div id="pw-section" style="display:'+(loginRole?"block":"none")+'">'
     +'<div class="field"><label>'+(loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort")+'</label>'
     +'<input id="lp" type="password" placeholder="Passwort" style="width:100%" onkeydown="if(event.key===\'Enter\')doLogin()" /></div>'
@@ -461,7 +521,10 @@ function resetAll(){
 function rSpielerAvail(){
   const days=getPlayDays(),players=allPlayers();
   let html=hdr("verfuegbarkeit")+'<main class="content"><section class="card"><h2 class="card-title">📅 Deine Verfügbarkeit</h2>';
-  html+='<p class="card-desc">Wähle deinen Namen und klicke die Zeitslots an.</p>';
+  const tzLabel = TIMEZONES.find(t=>t.value===userTimezone);
+  html+='<p class="card-desc">Wähle deinen Namen und klicke die Zeitslots an. '
+      +'Zeiten in <strong>'+(tzLabel?tzLabel.label:userTimezone)+'</strong>. '
+      +'<a href="#" onclick="setView('login');return false;" style="font-size:12px;color:var(--blue)">Zeitzone ändern</a></p>';
   html+='<div class="field-row"><label>Dein Name</label><select id="spieler-name" onchange="onSpielerSelect(this.value)" style="width:200px"><option value="">– Name wählen –</option>';
   players.forEach(p=>{html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+'>'+p+'</option>';});
   html+='</select></div>';
@@ -557,12 +620,14 @@ function renderGanttDay(ds,date,matchRows,showAssign){
     html+='<div class="gantt-slots">';
     slots.forEach(t=>{
       const isSel=isAss&&picked===t;
+      const dispT = slotToLocal(t, ds);
+      const ganttLabel = (userTimezone!=='Europe/Berlin'&&dispT!==t) ? t+'\n'+dispT : t;
       html+='<div class="gantt-slot" style="'
         +'background:'+(isSel?"#3a6fd8":bg)+';'
         +'border-color:'+(isSel?"#1a4fa0":bdr)+';'
         +'color:'+(isSel?"#fff":txt)+';'
         +'cursor:'+(showAssign?"pointer":"default")+'"';
-      if(showAssign) html+=' onclick="pickSlot(\''+m.id+'\',\''+ds+'\',\''+t+'\')" title="'+t+' Uhr wählen"';
+      if(showAssign) html+=' onclick="pickSlot(\''+m.id+'\',\''+ds+'\',\''+t+'\') " title="'+t+' Uhr (Berlin) wählen"';
       html+='>'+t+'</div>';
     });
     html+='</div>';
