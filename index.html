@@ -242,6 +242,7 @@ function hdr(tab){
   if(isAdmin) nav+='<button class="nav-btn '+(tab==="einstellungen"?"active":"")+('" onclick="setView(\'admin\')">Einstellungen</button>');
   nav+='<button class="nav-btn '+(tab==="verfuegbarkeit"?"active":"")+('" onclick="setView(currentUser===\'admin\'?\'admin_avail\':\'spieler_avail\')">Verfügbarkeit</button>');
   nav+='<button class="nav-btn '+(tab==="spielplan"?"active":"")+('" onclick="setView(currentUser===\'admin\'?\'admin_plan\':\'spieler_plan\')">Spielplan</button>');
+  if(isAdmin) nav+='<button class="nav-btn '+(tab==="doppel"?"active":"")+('" onclick="setView(\'admin_doppel\')">Doppel</button>');
   nav+='<button class="nav-btn '+(tab==="spiele"?"active":"")+('" onclick="setView(\'spiele\')">Alle Spiele</button>');
   return '<header class="topbar"><div class="topbar-brand"><span style="font-size:20px">🍺</span><span>Beerpong Liga</span></div>'
     +'<nav class="topbar-nav">'+nav+'</nav>'
