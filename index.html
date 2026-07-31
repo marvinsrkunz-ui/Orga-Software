@@ -41,8 +41,8 @@
     .role-btn:hover,.role-btn.active{border-color:var(--blue);background:var(--blue-bg)}
     .role-icon{font-size:32px}
     .role-label{font-size:14px;font-weight:600;color:var(--text)}
-    .content{max-width:900px;margin:0 auto;padding:24px 24px 60px}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+    .content{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.07)}
     .card-title{font-size:16px;font-weight:600;margin-bottom:4px}
     .card-desc{font-size:13px;color:var(--muted);margin-bottom:16px}
     .field{margin-bottom:14px}
@@ -62,7 +62,7 @@
     .prio-handle{font-size:16px;color:var(--faint)}
     .prio-label{flex:1;font-size:14px}
     .prio-rank{font-size:12px;color:var(--faint)}
-    .teams-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .teams-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     @media(max-width:600px){.teams-grid{grid-template-columns:1fr}}
     .team-col{background:var(--bg);border-radius:var(--r);padding:14px;border:1px solid var(--border)}
     .team-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
@@ -99,12 +99,17 @@
     /* Gantt */
     .gantt-day{margin-bottom:28px}
     .gantt-title{font-size:15px;font-weight:700;margin-bottom:10px;padding:8px 14px;background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--r);color:var(--blue-text)}
-    .gantt-row{display:flex;align-items:center;margin-bottom:5px;gap:0}
-    .gantt-label{width:120px;min-width:120px;display:flex;align-items:center;gap:5px;padding-right:8px}
-    .gantt-slots{flex:1;display:flex;gap:3px}
-    .gantt-slot{flex:1;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:transform .1s}
-    .gantt-slot:hover{transform:scale(1.02)}
-    .gantt-btn{width:130px;min-width:130px;padding-left:10px;display:flex;gap:5px;align-items:center}
+    .gantt-row{display:flex;align-items:center;margin-bottom:5px;gap:0;width:100%}
+    .gantt-label{flex:0 0 15%;min-width:0;display:flex;align-items:center;gap:4px;padding-right:6px;overflow:hidden}
+    .gantt-slots{flex:1;display:flex;gap:2px;min-width:0}
+    .gantt-slot{flex:1;min-width:0;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:background .15s;overflow:hidden;padding:0 2px;text-align:center}
+    .gantt-slot:hover{filter:brightness(0.93)}
+    .gantt-btn{flex:0 0 100px;min-width:0;padding-left:6px;display:flex;gap:4px;align-items:center}
+    @media(max-width:600px){
+      .gantt-label{flex:0 0 20%}
+      .gantt-btn{flex:0 0 80px}
+      .gantt-slot{font-size:8px}
+    }
   </style>
 </head>
 <body>
