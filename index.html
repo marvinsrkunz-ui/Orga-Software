@@ -369,7 +369,16 @@ function rSpielerAvail(){
   players.forEach(p=>{html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+'>'+p+'</option>';});
   html+='</select></div>';
   if(selectedSpieler&&days.length>0){
-    html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th><th>Verfügbare Zeiten</th></tr></thead><tbody>';
+    // Count total slots and days for this spieler
+  const avData = S.availability[selectedSpieler]||{};
+  let totalSlots=0,totalDays=0;
+  days.forEach(d=>{
+    const ds=d.toISOString().slice(0,10);
+    const cnt=(avData[ds]||[]).length;
+    if(cnt>0){totalSlots+=cnt;totalDays++;}
+  });
+  if(totalSlots>0) html+='<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Gesamt: <strong style="color:var(--text)">'+totalSlots+' Slots</strong> an <strong style="color:var(--text)">'+totalDays+' Tagen</strong></p>';
+  html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th><th>Verfügbare Zeiten</th></tr></thead><tbody>';
     days.forEach(d=>{
       const ds=d.toISOString().slice(0,10);
       const slots=getSlots(d.getDay());
@@ -404,8 +413,17 @@ function rAdminAvail(){
   const days=getPlayDays(),players=allPlayers();
   let html=hdr("verfuegbarkeit")+'<main class="content"><section class="card"><h2 class="card-title">📊 Verfügbarkeitsübersicht</h2>';
   if(days.length===0){html+='<p class="empty-state">Kein Startdatum gesetzt.</p></section></main>';document.getElementById("root").innerHTML=html;return;}
+  // Count slots per player
+  function countPlayer(p){
+    let slots=0,daysC=0;
+    days.forEach(d=>{const cnt=((S.availability[p]||{})[d.toISOString().slice(0,10)]||[]).length;if(cnt>0){slots+=cnt;daysC++;}});
+    return {slots,days:daysC};
+  }
   html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th>';
-  players.forEach(p=>{html+='<th>'+p+'</th>';});
+  players.forEach(p=>{
+    const c=countPlayer(p);
+    html+='<th>'+p+(c.slots>0?'<br><span style="font-size:10px;color:var(--muted);font-weight:400">('+c.slots+'/'+c.days+')</span>':'')+'</th>';
+  });
   html+='</tr></thead><tbody>';
   days.forEach(d=>{
     const ds=d.toISOString().slice(0,10);
