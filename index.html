@@ -433,7 +433,7 @@ function rSpielerAvail(){
       html+='<tr><td><strong>'+dn(d)+'</strong><br><span style="font-size:11px;color:var(--muted)">'+fmt(d)+'</span></td><td><div class="time-slots">';
       slots.forEach(t=>{
         const local=slotToLocal(t,ds);
-        html+='<span class="time-slot'+(sel.includes(t)?" on":"")+'" onclick="toggleSlot(\''+ds+'\',\''+t+'\')">'+label+'</span>';
+        html+='<span class="time-slot'+(sel.includes(t)?" on":"")+'" onclick="toggleSlot(\''+ds+'\',\''+t+'\')">'+local+'</span>';
       });
       html+='</div></td></tr>';
     });
