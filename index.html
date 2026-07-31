@@ -16,12 +16,12 @@
     }
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.6;color:var(--text);background:var(--bg);min-height:100vh}
     .topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 16px;height:56px;overflow-x:auto}
-    .topbar-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
-    .topbar-nav{display:flex;gap:0;flex:1;overflow-x:auto}
+    .topbar-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;white-space:nowrap}
+    .topbar-nav{display:flex;gap:0;flex:1}
     .nav-btn{padding:6px 10px;border:none;background:none;cursor:pointer;font-size:13px;font-family:inherit;color:var(--muted);border-radius:var(--r);border-bottom:2px solid transparent;white-space:nowrap}
     .nav-btn:hover{color:var(--text);background:var(--bg)}
     .nav-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
-    .topbar-user{display:flex;align-items:center;gap:8px}
+    .topbar-user{display:flex;align-items:center;gap:8px;white-space:nowrap}
     .user-name{font-size:13px;color:var(--muted)}
     .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border:1px solid var(--border2);border-radius:var(--r);background:var(--surface);color:var(--text);font-size:14px;font-family:inherit;cursor:pointer}
     .btn:hover{background:var(--bg)}
@@ -32,7 +32,7 @@
     .btn-sm{padding:5px 10px;font-size:13px}
     .btn-full{width:100%;justify-content:center}
     .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center}
-    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:2.5rem 2rem;width:360px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+    .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:2.5rem 2rem;width:380px;box-shadow:0 1px 3px rgba(0,0,0,.07)}
     .login-logo{font-size:48px;text-align:center;margin-bottom:8px}
     .login-title{font-size:22px;font-weight:600;text-align:center}
     .login-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px}
@@ -51,7 +51,7 @@
     .field-row label{font-size:13px;color:var(--muted);min-width:160px}
     input,select{padding:8px 11px;border:1px solid var(--border2);border-radius:var(--r);font-size:14px;font-family:inherit;background:var(--surface);color:var(--text);width:220px}
     input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(58,111,216,.12)}
-    input[type=date],input[type=time]{width:170px}
+    input[type=date]{width:170px}
     .err-msg{color:#c0392b;font-size:13px;margin-bottom:10px}
     .notice{background:#fef9ec;border:1px solid #f0d060;border-radius:var(--r);padding:10px 14px;font-size:13px;color:#7a5c00;margin:10px 0 14px}
     .pw-display{display:flex;align-items:center;padding:8px 12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);min-width:160px}
@@ -96,20 +96,15 @@
     .empty-state{color:var(--muted);font-size:14px;padding:12px 0}
     .toast{position:fixed;bottom:24px;right:24px;background:#1a1917;color:#fff;padding:10px 18px;border-radius:var(--r);font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999}
     .toast-err{background:#c0392b}
-    /* Gantt */
     .gantt-day{margin-bottom:28px}
     .gantt-title{font-size:15px;font-weight:700;margin-bottom:10px;padding:8px 14px;background:var(--blue-bg);border-left:4px solid var(--blue);border-radius:var(--r);color:var(--blue-text)}
-    .gantt-row{display:flex;align-items:center;margin-bottom:5px;gap:0;width:100%}
+    .gantt-row{display:flex;align-items:center;margin-bottom:5px;width:100%}
     .gantt-label{flex:0 0 15%;min-width:0;display:flex;align-items:center;gap:4px;padding-right:6px;overflow:hidden}
     .gantt-slots{flex:1;display:flex;gap:2px;min-width:0}
-    .gantt-slot{flex:1;min-width:0;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:background .15s;overflow:hidden;padding:0 2px;text-align:center}
+    .gantt-slot{flex:1;min-width:0;height:30px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;cursor:pointer;border:1px solid transparent;overflow:hidden;padding:0 2px;text-align:center;line-height:1.2}
     .gantt-slot:hover{filter:brightness(0.93)}
-    .gantt-btn{flex:0 0 100px;min-width:0;padding-left:6px;display:flex;gap:4px;align-items:center}
-    @media(max-width:600px){
-      .gantt-label{flex:0 0 20%}
-      .gantt-btn{flex:0 0 80px}
-      .gantt-slot{font-size:8px}
-    }
+    .gantt-btn{flex:0 0 110px;min-width:0;padding-left:6px;display:flex;gap:4px;align-items:center}
+    @media(max-width:600px){.gantt-label{flex:0 0 20%}.gantt-btn{flex:0 0 80px}.gantt-slot{font-size:8px}}
   </style>
 </head>
 <body>
@@ -120,8 +115,28 @@ const BIN_ID  = "6a2dbe72f5f4af5e29ed3aae";
 const API_KEY = "$2a$10$3LtezdRQg2Ne0/9WICvsXucZI5a/LIQeQt4OH7D3eYipzjqhEDDn6";
 const BIN_URL = "https://api.jsonbin.io/v3/b/"+BIN_ID;
 
+const TIMEZONES = [
+  {label:"Berlin (Standard)",   value:"Europe/Berlin"},
+  {label:"London",              value:"Europe/London"},
+  {label:"Paris",               value:"Europe/Paris"},
+  {label:"Amsterdam",           value:"Europe/Amsterdam"},
+  {label:"Zürich",              value:"Europe/Zurich"},
+  {label:"New York",            value:"America/New_York"},
+  {label:"Los Angeles",         value:"America/Los_Angeles"},
+  {label:"Chicago",             value:"America/Chicago"},
+  {label:"Toronto",             value:"America/Toronto"},
+  {label:"São Paulo",           value:"America/Sao_Paulo"},
+  {label:"Dubai",               value:"Asia/Dubai"},
+  {label:"Mumbai",              value:"Asia/Kolkata"},
+  {label:"Bangkok",             value:"Asia/Bangkok"},
+  {label:"Singapur",            value:"Asia/Singapore"},
+  {label:"Tokio",               value:"Asia/Tokyo"},
+  {label:"Sydney",              value:"Australia/Sydney"},
+  {label:"Auckland",            value:"Pacific/Auckland"},
+];
+
 const DEF = {
-  settings:{startDate:"",spielerPassword:"",dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"],timezone:"Europe/Berlin"},
+  settings:{startDate:"",spielerPassword:"",dayPriority:["Freitag","Samstag","Donnerstag","Mittwoch","Dienstag","Montag","Sonntag"]},
   teams:{team1:{name:"Team A",players:["","","","","","","",""]},team2:{name:"Team B",players:["","","","","","","",""]}},
   doubles:{team1:[["",""],["",""],["",""],["",""]],team2:[["",""],["",""],["",""],["",""]]},
   schedule:[],matchAssignments:{},matchSlots:{},availability:{}
@@ -129,7 +144,25 @@ const DEF = {
 
 let S=JSON.parse(JSON.stringify(DEF));
 let currentUser=null,currentView="login",loginRole=null,dragSrc=null,selectedSpieler=null,selectedDoppel=null;
-let userTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Berlin";
+let userTimezone="Europe/Berlin";
+
+// Convert Berlin time slot to user's local time for display
+function slotToLocal(slot, dateStr) {
+  if(userTimezone==="Europe/Berlin") return slot;
+  try {
+    const [h,m] = slot.split(":").map(Number);
+    // Build a date string interpreted as Berlin local time
+    const berlinDt = new Date(dateStr+"T"+pad(h)+":"+pad(m)+":00");
+    // Get Berlin UTC offset
+    const berlinOffset = parseInt(new Date(berlinDt).toLocaleString("en-US",{timeZone:"Europe/Berlin",timeZoneName:"short"}).match(/GMT([+-]\d+)/)?.[1]||0)*60;
+    const localOffset = parseInt(new Date(berlinDt).toLocaleString("en-US",{timeZone:userTimezone,timeZoneName:"short"}).match(/GMT([+-]\d+)/)?.[1]||0)*60;
+    const diffMin = localOffset - berlinOffset;
+    const totalMin = h*60+m+diffMin;
+    const lh = Math.floor(((totalMin%1440)+1440)%1440/60);
+    const lm = ((totalMin%60)+60)%60;
+    return pad(lh)+":"+pad(lm);
+  } catch(e) { return slot; }
+}
 
 async function loadData(){
   try{
@@ -167,67 +200,10 @@ const fmt=d=>d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"});
 const fmtFull=d=>d.toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"2-digit",year:"numeric"});
 function pad(n){return n<10?"0"+n:String(n);}
 
-// Convert a time string "HH:MM" from Berlin time to user's local timezone
-function berlinToLocal(timeStr, dateStr) {
-  try {
-    const [h,m] = timeStr.split(':').map(Number);
-    // Create date in Berlin timezone
-    const berlinStr = dateStr+'T'+pad(h)+':'+pad(m)+':00';
-    const berlinDate = new Date(new Date(berlinStr).toLocaleString('en-US', {timeZone:'Europe/Berlin'}));
-    const diff = new Date(berlinStr) - berlinDate;
-    const utc = new Date(new Date(berlinStr).getTime() + new Date().getTimezoneOffset()*60000 + diff);
-    // Convert to user timezone
-    const localStr = new Date(berlinStr).toLocaleTimeString('de-DE', {timeZone: userTimezone, hour:'2-digit', minute:'2-digit'});
-    return localStr;
-  } catch(e) { return timeStr; }
-}
-
-// Convert slot time from Berlin to user timezone for display
-function slotToLocal(slot, dateStr) {
-  if(userTimezone === 'Europe/Berlin') return slot;
-  try {
-    const [h,m] = slot.split(':').map(Number);
-    const dt = new Date(dateStr+'T'+pad(h)+':'+pad(m)+':00');
-    // Interpret as Berlin time
-    const berlinOffset = getBerlinOffset(dt);
-    const utcMs = dt.getTime() - berlinOffset;
-    const localDt = new Date(utcMs);
-    const localStr = localDt.toLocaleTimeString('de-DE', {timeZone: userTimezone, hour:'2-digit', minute:'2-digit'});
-    return localStr;
-  } catch(e) { return slot; }
-}
-
-function getBerlinOffset(dt) {
-  // Get Berlin UTC offset in ms for a given date
-  const berlinStr = dt.toLocaleString('en-US', {timeZone:'Europe/Berlin', hour12:false, year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  const berlinDt = new Date(berlinStr.replace(/(\d+)\/(\d+)\/(\d+),?\s/, '$3-$1-$2T'));
-  return dt.getTime() - berlinDt.getTime();
-}
-
-const TIMEZONES = [
-  {label:"Berlin (Standard)", value:"Europe/Berlin"},
-  {label:"London", value:"Europe/London"},
-  {label:"Paris", value:"Europe/Paris"},
-  {label:"New York", value:"America/New_York"},
-  {label:"Los Angeles", value:"America/Los_Angeles"},
-  {label:"Chicago", value:"America/Chicago"},
-  {label:"Toronto", value:"America/Toronto"},
-  {label:"São Paulo", value:"America/Sao_Paulo"},
-  {label:"Dubai", value:"Asia/Dubai"},
-  {label:"Mumbai", value:"Asia/Kolkata"},
-  {label:"Bangkok", value:"Asia/Bangkok"},
-  {label:"Singapore", value:"Asia/Singapore"},
-  {label:"Tokyo", value:"Asia/Tokyo"},
-  {label:"Sydney", value:"Australia/Sydney"},
-  {label:"Auckland", value:"Pacific/Auckland"},
-];
-
 function getSlots(dayIdx){
-  // 45-min slots; Sa/So from 12:00, Mo-Fr from 17:00
   const slots=[];
   let startMin=(dayIdx===0||dayIdx===6)?12*60:17*60;
-  let endMin=23*60;
-  for(let m=startMin;m<=endMin;m+=45) slots.push(pad(Math.floor(m/60))+":"+pad(m%60));
+  for(let m=startMin;m<=23*60;m+=45) slots.push(pad(Math.floor(m/60))+":"+pad(m%60));
   return slots;
 }
 
@@ -272,10 +248,7 @@ function getMatchesByDay(){
     const ds=d.toISOString().slice(0,10);
     matches.forEach(m=>{
       const p=getPossibleSlots(m).find(x=>x.ds===ds);
-      if(p){
-        if(!byDay[ds]) byDay[ds]={date:d,matches:[]};
-        byDay[ds].matches.push({m,slots:p.slots});
-      }
+      if(p){if(!byDay[ds])byDay[ds]={date:d,matches:[]};byDay[ds].matches.push({m,slots:p.slots});}
     });
   });
   return Object.entries(byDay).sort((a,b)=>{
@@ -294,12 +267,12 @@ function toast(msg,err){
 
 function hdr(tab){
   const isAdmin=currentUser==="admin";
-  let nav='';
-  if(isAdmin) nav+='<button class="nav-btn '+(tab==="einstellungen"?"active":"")+('" onclick="setView(\'admin\')">Einstellungen</button>');
-  nav+='<button class="nav-btn '+(tab==="verfuegbarkeit"?"active":"")+('" onclick="setView(currentUser===\'admin\'?\'admin_avail\':\'spieler_avail\')">Verfügbarkeit</button>');
-  nav+='<button class="nav-btn '+(tab==="spielplan"?"active":"")+('" onclick="setView(currentUser===\'admin\'?\'admin_plan\':\'spieler_plan\')">Spielplan</button>');
-  if(isAdmin) nav+='<button class="nav-btn '+(tab==="doppel"?"active":"")+('" onclick="setView(\'admin_doppel\')">Doppel</button>');
-  nav+='<button class="nav-btn '+(tab==="spiele"?"active":"")+('" onclick="setView(\'spiele\')">Alle Spiele</button>');
+  let nav="";
+  if(isAdmin) nav+='<button class="nav-btn '+(tab==="einstellungen"?"active":"")+'" onclick="setView(\'admin\')">Einstellungen</button>';
+  nav+='<button class="nav-btn '+(tab==="verfuegbarkeit"?"active":"")+'" onclick="setView(currentUser===\'admin\'?\'admin_avail\':\'spieler_avail\')">Verfügbarkeit</button>';
+  nav+='<button class="nav-btn '+(tab==="spielplan"?"active":"")+'" onclick="setView(currentUser===\'admin\'?\'admin_plan\':\'spieler_plan\')">Spielplan</button>';
+  if(isAdmin) nav+='<button class="nav-btn '+(tab==="doppel"?"active":"")+'" onclick="setView(\'admin_doppel\')">Doppel</button>';
+  nav+='<button class="nav-btn '+(tab==="spiele"?"active":"")+'" onclick="setView(\'spiele\')">Alle Spiele</button>';
   return '<header class="topbar"><div class="topbar-brand"><span style="font-size:20px">🍺</span><span>Beerpong Liga</span></div>'
     +'<nav class="topbar-nav">'+nav+'</nav>'
     +'<div class="topbar-user"><span class="user-name">'+currentUser+'</span>'
@@ -308,24 +281,26 @@ function hdr(tab){
 
 function setView(v){currentView=v;render();}
 function render(){
-  ({login:rLogin,admin:rAdmin,admin_avail:rAdminAvail,admin_plan:rAdminPlan,admin_doppel:rAdminDoppel,spieler_avail:rSpielerAvail,spieler_plan:rSpielerPlan,spiele:rSpiele}[currentView]||rLogin)();
+  const views={login:rLogin,admin:rAdmin,admin_avail:rAdminAvail,admin_plan:rAdminPlan,admin_doppel:rAdminDoppel,spieler_avail:rSpielerAvail,spieler_plan:rSpielerPlan,spiele:rSpiele};
+  (views[currentView]||rLogin)();
 }
 
-// ── Login ──────────────────────────────────────────────────────
+// ── Login ────────────────────────────────────────────────────
 function rLogin(){
+  const tzOpts=TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?" selected":"")+">"+tz.label+"</option>").join("");
   document.getElementById("root").innerHTML=
     '<div class="login-wrap"><div class="login-card">'
     +'<div class="login-logo">🍺</div>'
     +'<h1 class="login-title">Beerpong Liga</h1>'
     +'<p class="login-sub">Wer bist du?</p>'
     +'<div class="role-picker">'
-    +'<button class="role-btn '+(loginRole==="admin"?"active":"")+('" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>')
-    +'<button class="role-btn '+(loginRole==="spieler"?"active":"")+('" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>')
+    +'<button class="role-btn '+(loginRole==="admin"?"active":"")+'" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>'
+    +'<button class="role-btn '+(loginRole==="spieler"?"active":"")+'" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>'
     +'</div>'
-    +'<div style="margin-bottom:14px"><label style="display:block;font-size:13px;color:var(--muted);margin-bottom:4px">Deine Zeitzone</label>'
-    +'<select id="tz-sel" onchange="userTimezone=this.value" style="width:100%">'
-    +TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?' selected':'')+'>'+tz.label+'</option>').join('')
-    +'</select></div>'
+    +'<div class="field" style="margin-bottom:16px">'
+    +'<label>Deine Zeitzone</label>'
+    +'<select id="tz-sel" onchange="userTimezone=this.value" style="width:100%">'+tzOpts+'</select>'
+    +'</div>'
     +'<div id="pw-section" style="display:'+(loginRole?"block":"none")+'">'
     +'<div class="field"><label>'+(loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort")+'</label>'
     +'<input id="lp" type="password" placeholder="Passwort" style="width:100%" onkeydown="if(event.key===\'Enter\')doLogin()" /></div>'
@@ -333,105 +308,10 @@ function rLogin(){
     +'<button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>'
     +'</div></div></div>';
 }
-function selRole(r){loginRole=r;function rAdminDoppel(){
-  const days=getPlayDays();
-  const d1=S.doubles.team1, d2=S.doubles.team2;
-
-  // Build list of doubles
-  const doubles=[];
-  for(let i=0;i<4;i++){
-    doubles.push({id:"D"+(i+1),team:"team1",players:[d1[i][0],d1[i][1]].filter(p=>p)});
-    doubles.push({id:"D"+(i+1),team:"team2",players:[d2[i][0],d2[i][1]].filter(p=>p)});
-  }
-  // Unique doubles by id+team
-  const doppelList=[];
-  for(let i=0;i<4;i++){
-    const p1=[d1[i][0],d1[i][1]].filter(p=>p);
-    const p2=[d2[i][0],d2[i][1]].filter(p=>p);
-    const allP=[...p1,...p2];
-    doppelList.push({id:"D"+(i+1),players:allP,p1,p2});
-  }
-
-  let html=hdr("doppel")+'<main class="content"><section class="card">';
-  html+='<h2 class="card-title">🤝 Doppel-Verfügbarkeit</h2>';
-  html+='<p class="card-desc">Wähle ein Doppel um zu sehen wann 3 oder 4 Spieler können.</p>';
-
-  // Doppel selector
-  html+='<div class="field-row" style="margin-bottom:16px"><label>Doppel auswählen</label>';
-  html+='<select id="doppel-sel" onchange="selectDoppel(this.value)" style="width:auto">';
-  html+='<option value="">– Doppel wählen –</option>';
-  doppelList.forEach(d=>{
-    const names=d.players.join(", ")||"(keine Spieler)";
-    html+='<option value="'+d.id+'"'+(selectedDoppel===d.id?" selected":"")+'>'+d.id+' — '+names+'</option>';
-  });
-  html+='</select></div>';
-
-  if(selectedDoppel&&days.length>0){
-    const dIdx=parseInt(selectedDoppel.slice(1))-1;
-    const allPlayers=[...(d1[dIdx]||[]),...(d2[dIdx]||[])].filter(p=>p);
-    const total=allPlayers.length;
-
-    html+='<div style="margin-bottom:8px;font-size:13px"><strong>Spieler:</strong> '+allPlayers.join(", ")+'</div>';
-
-    if(total===0){
-      html+='<p class="empty-state">Keine Spieler für dieses Doppel eingetragen.</p>';
-    } else {
-      // For each day, find all slots where at least 3 of 4 (or all) can
-      let hasAny=false;
-      days.forEach(d=>{
-        const ds=d.toISOString().slice(0,10);
-        const slots=getSlots(d.getDay());
-
-        // Per slot: who can, who cant
-        const slotData=[];
-        slots.forEach(t=>{
-          const canPlay=allPlayers.filter(p=>((S.availability[p]||{})[ds]||[]).includes(t));
-          const cantPlay=allPlayers.filter(p=>!((S.availability[p]||{})[ds]||[]).includes(t));
-          if(canPlay.length>=3) slotData.push({t,canPlay,cantPlay});
-        });
-
-        if(slotData.length===0) return;
-        hasAny=true;
-
-        html+='<div style="margin-bottom:16px">';
-        html+='<div style="font-weight:600;font-size:14px;margin-bottom:6px;color:var(--blue-text)">'+dn(d)+', '+fmt(d)+'</div>';
-
-        slotData.forEach(({t,canPlay,cantPlay})=>{
-          const allCan=cantPlay.length===0;
-          const bg=allCan?"#d0eddc":"#faeeda";
-          const bdr=allCan?"#3dab6b":"#c8860a";
-          const badge=allCan
-            ?'<span style="font-size:11px;background:#d0eddc;color:#164d2e;padding:1px 7px;border-radius:20px;font-weight:600">alle '+total+'</span>'
-            :'<span style="font-size:11px;background:#faeeda;color:#633806;padding:1px 7px;border-radius:20px;font-weight:600">'+canPlay.length+'/'+total+'</span>';
-
-          html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid '+bdr+';border-radius:6px;background:'+bg+';margin-bottom:5px;flex-wrap:wrap">';
-          html+='<span style="font-weight:700;font-size:13px;min-width:45px">'+t+'</span>';
-          html+=badge;
-          if(cantPlay.length>0){
-            html+='<span style="font-size:12px;color:#7a5c00">Fehlt: <strong>'+cantPlay.join(", ")+'</strong></span>';
-          } else {
-            html+='<span style="font-size:12px;color:#164d2e">Alle verfügbar ✓</span>';
-          }
-          html+='</div>';
-        });
-        html+='</div>';
-      });
-      if(!hasAny) html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';
-    }
-  } else if(!selectedDoppel){
-    html+='<p class="empty-state">Bitte ein Doppel auswählen.</p>';
-  } else {
-    html+='<p class="empty-state">Kein Startdatum gesetzt.</p>';
-  }
-
-  html+='</section></main>';
-  document.getElementById("root").innerHTML=html;
-}
-function selectDoppel(val){selectedDoppel=val;rAdminDoppel();}
-
-rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
+function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
 async function doLogin(){
   const p=document.getElementById("lp").value;
+  userTimezone=document.getElementById("tz-sel").value;
   if(loginRole==="admin"&&p==="jaaxjaax"){currentUser="admin";await loadData();setView("admin");}
   else if(loginRole==="spieler"){
     document.getElementById("lp").disabled=true;
@@ -439,18 +319,18 @@ async function doLogin(){
     document.getElementById("lp").disabled=false;
     if(S.settings.spielerPassword&&p===S.settings.spielerPassword){currentUser="Spieler";setView("spieler_avail");}
     else{document.getElementById("lerr").style.display="block";}
-  } else{document.getElementById("lerr").style.display="block";}
+  }else{document.getElementById("lerr").style.display="block";}
 }
 function logout(){currentUser=null;loginRole=null;setView("login");}
 
-// ── Admin Einstellungen ────────────────────────────────────────
+// ── Admin Einstellungen ──────────────────────────────────────
 function rAdmin(){
   const s=S.settings,t1=S.teams.team1,t2=S.teams.team2,d1=S.doubles.team1,d2=S.doubles.team2;
   let note="";
   if(s.startDate){const d=new Date(s.startDate);d.setDate(d.getDate()+2);note='<div class="notice">Spieltage starten ab <strong>'+fmtFull(d)+'</strong>.</div>';}
   function pOpts(team,sel){
     let o='<option value="">– wählen –</option>';
-    team.players.forEach(p=>{if(p)o+='<option value="'+p+'"'+(sel===p?" selected":"")+'>'+p+'</option>';});
+    team.players.forEach(p=>{if(p)o+='<option value="'+p+'"'+(sel===p?" selected":"")+">"+p+"</option>";});
     return o;
   }
   let html=hdr("einstellungen")+'<main class="content">';
@@ -459,27 +339,22 @@ function rAdmin(){
   html+='<div class="field-row"><label>Aktuelles Passwort</label><div class="pw-display">'+(s.spielerPassword?'<span class="pw-value">'+s.spielerPassword+'</span>':'<span class="pw-empty">Nicht gesetzt</span>')+'</div></div>';
   html+='<div class="field-row"><label>Startdatum</label><input id="sd" type="date" value="'+s.startDate+'" /></div>';
   html+=note+'<button class="btn btn-primary" onclick="saveSettings()">Speichern</button></section>';
-
   html+='<section class="card"><h2 class="card-title">📅 Tagespriorisierung</h2><p class="card-desc">Oben = höchste Priorität im Spielplan.</p><div class="prio-list">';
   s.dayPriority.forEach((day,i)=>{html+='<div class="prio-row" draggable="true" data-idx="'+i+'" ondragstart="dsEv(event)" ondragover="doEv(event)" ondrop="ddEv(event)"><span class="prio-handle">⠿</span><span class="prio-label">'+day+'</span><span class="prio-rank">#'+(i+1)+'</span></div>';});
   html+='</div><button class="btn btn-primary" style="margin-top:12px" onclick="savePrio()">Speichern</button></section>';
-
   html+='<section class="card"><h2 class="card-title">👥 Teams & Spieler</h2><div class="teams-grid">';
   html+='<div class="team-col"><div class="team-header"><span class="tag tag-blue">Team 1</span><input id="tn1" type="text" value="'+t1.name+'" /></div>';
   t1.players.forEach((p,i)=>{html+='<div class="player-row"><span class="player-num">'+(i+1)+'</span><input class="p1" data-i="'+i+'" type="text" value="'+p+'" placeholder="Spieler '+(i+1)+'" /></div>';});
   html+='</div><div class="team-col"><div class="team-header"><span class="tag tag-green">Team 2</span><input id="tn2" type="text" value="'+t2.name+'" /></div>';
   t2.players.forEach((p,i)=>{html+='<div class="player-row"><span class="player-num">'+(i+1)+'</span><input class="p2" data-i="'+i+'" type="text" value="'+p+'" placeholder="Spieler '+(i+1)+'" /></div>';});
   html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="savePlayers()">Spieler speichern</button></section>';
-
   html+='<section class="card"><h2 class="card-title">🤝 Doppelaufstellung</h2><div class="teams-grid">';
   html+='<div class="team-col"><div class="team-header"><span class="tag tag-blue">'+t1.name+'</span></div>';
   [0,1,2,3].forEach(i=>{html+='<div class="double-block"><div class="double-label"><span class="tag tag-blue">D'+(i+1)+'</span></div><div class="double-inputs"><select class="d1a" data-i="'+i+'">'+pOpts(t1,d1[i][0])+'</select><select class="d1b" data-i="'+i+'">'+pOpts(t1,d1[i][1])+'</select></div></div>';});
   html+='</div><div class="team-col"><div class="team-header"><span class="tag tag-green">'+t2.name+'</span></div>';
   [0,1,2,3].forEach(i=>{html+='<div class="double-block"><div class="double-label"><span class="tag tag-green">D'+(i+1)+'</span></div><div class="double-inputs"><select class="d2a" data-i="'+i+'">'+pOpts(t2,d2[i][0])+'</select><select class="d2b" data-i="'+i+'">'+pOpts(t2,d2[i][1])+'</select></div></div>';});
   html+='</div></div><button class="btn btn-primary" style="margin-top:14px" onclick="saveDoubles()">Doppel speichern</button></section>';
-
-  html+='<section class="card"><h2 class="card-title">⚠️ Reset</h2><p class="card-desc">Alle Daten zurücksetzen.</p>';
-  html+='<button class="btn" style="background:#c0392b;color:#fff;border-color:#c0392b" onclick="resetAll()">🗑 Zurücksetzen</button></section></main>';
+  html+='<section class="card"><h2 class="card-title">⚠️ Reset</h2><p class="card-desc">Alle Daten zurücksetzen.</p><button class="btn" style="background:#c0392b;color:#fff;border-color:#c0392b" onclick="resetAll()">🗑 Zurücksetzen</button></section></main>';
   document.getElementById("root").innerHTML=html;
 }
 function saveSettings(){
@@ -517,42 +392,37 @@ function resetAll(){
   push().then(()=>{toast("Zurückgesetzt ✓");rAdmin();});
 }
 
-// ── Verfügbarkeit Spieler ──────────────────────────────────────
+// ── Verfügbarkeit Spieler ────────────────────────────────────
 function rSpielerAvail(){
   const days=getPlayDays(),players=allPlayers();
+  const tzLabel=TIMEZONES.find(t=>t.value===userTimezone);
   let html=hdr("verfuegbarkeit")+'<main class="content"><section class="card"><h2 class="card-title">📅 Deine Verfügbarkeit</h2>';
-  const tzLabel = TIMEZONES.find(t=>t.value===userTimezone);
-  html+='<p class="card-desc">Wähle deinen Namen und klicke die Zeitslots an. '
-      +'Zeiten in <strong>'+(tzLabel?tzLabel.label:userTimezone)+'</strong>. '
-      +'<a href="#" onclick="setView('login');return false;" style="font-size:12px;color:var(--blue)">Zeitzone ändern</a></p>';
+  html+='<p class="card-desc">Klicke die Zeitslots an — Zeiten in <strong>'+(tzLabel?tzLabel.label:userTimezone)+'</strong>. '
+       +'<a href="#" onclick="logout();return false;" style="color:var(--blue);font-size:12px">Zeitzone ändern</a></p>';
   html+='<div class="field-row"><label>Dein Name</label><select id="spieler-name" onchange="onSpielerSelect(this.value)" style="width:200px"><option value="">– Name wählen –</option>';
-  players.forEach(p=>{html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+'>'+p+'</option>';});
+  players.forEach(p=>{html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+">"+p+"</option>";});
   html+='</select></div>';
   if(selectedSpieler&&days.length>0){
-    // Count total slots and days for this spieler
-  const avData = S.availability[selectedSpieler]||{};
-  let totalSlots=0,totalDays=0;
-  days.forEach(d=>{
-    const ds=d.toISOString().slice(0,10);
-    const cnt=(avData[ds]||[]).length;
-    if(cnt>0){totalSlots+=cnt;totalDays++;}
-  });
-  if(totalSlots>0) html+='<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Gesamt: <strong style="color:var(--text)">'+totalSlots+' Slots</strong> an <strong style="color:var(--text)">'+totalDays+' Tagen</strong></p>';
-  html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th><th>Verfügbare Zeiten</th></tr></thead><tbody>';
+    const avData=S.availability[selectedSpieler]||{};
+    let totalSlots=0,totalDays=0;
+    days.forEach(d=>{const cnt=(avData[d.toISOString().slice(0,10)]||[]).length;if(cnt>0){totalSlots+=cnt;totalDays++;}});
+    if(totalSlots>0) html+='<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Gesamt: <strong style="color:var(--text)">'+totalSlots+' Slots</strong> an <strong style="color:var(--text)">'+totalDays+' Tagen</strong></p>';
+    html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th><th>Verfügbare Zeiten</th></tr></thead><tbody>';
     days.forEach(d=>{
       const ds=d.toISOString().slice(0,10);
       const slots=getSlots(d.getDay());
       const sel=(S.availability[selectedSpieler]||{})[ds]||[];
       html+='<tr><td><strong>'+dn(d)+'</strong><br><span style="font-size:11px;color:var(--muted)">'+fmt(d)+'</span></td><td><div class="time-slots">';
-      slots.forEach(t=>{html+='<span class="time-slot'+(sel.includes(t)?" on":"")+'" onclick="toggleSlot(\''+ds+'\',\''+t+'\')">'+t+'</span>';});
+      slots.forEach(t=>{
+        const local=slotToLocal(t,ds);
+        const label=(local!==t)?t+" ("+local+")":t;
+        html+='<span class="time-slot'+(sel.includes(t)?" on":"")+'" onclick="toggleSlot(\''+ds+'\',\''+t+'\')">'+label+'</span>';
+      });
       html+='</div></td></tr>';
     });
     html+='</tbody></table></div>';
-  } else if(!selectedSpieler){
-    html+='<p class="empty-state">Bitte Namen auswählen.</p>';
-  } else {
-    html+='<p class="empty-state">Noch kein Startdatum vom Admin gesetzt.</p>';
-  }
+  }else if(!selectedSpieler){html+='<p class="empty-state">Bitte Namen auswählen.</p>';}
+  else{html+='<p class="empty-state">Noch kein Startdatum vom Admin gesetzt.</p>';}
   html+='</section></main>';
   document.getElementById("root").innerHTML=html;
 }
@@ -564,26 +434,21 @@ function toggleSlot(ds,time){
   const arr=S.availability[selectedSpieler][ds];
   const idx=arr.indexOf(time);
   if(idx>=0)arr.splice(idx,1);else arr.push(time);
-  rSpielerAvail();
-  push();
+  rSpielerAvail();push();
 }
 
-// ── Verfügbarkeit Admin ────────────────────────────────────────
+// ── Verfügbarkeit Admin ──────────────────────────────────────
 function rAdminAvail(){
   const days=getPlayDays(),players=allPlayers();
   let html=hdr("verfuegbarkeit")+'<main class="content"><section class="card"><h2 class="card-title">📊 Verfügbarkeitsübersicht</h2>';
   if(days.length===0){html+='<p class="empty-state">Kein Startdatum gesetzt.</p></section></main>';document.getElementById("root").innerHTML=html;return;}
-  // Count slots per player
   function countPlayer(p){
     let slots=0,daysC=0;
     days.forEach(d=>{const cnt=((S.availability[p]||{})[d.toISOString().slice(0,10)]||[]).length;if(cnt>0){slots+=cnt;daysC++;}});
     return {slots,days:daysC};
   }
   html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th>';
-  players.forEach(p=>{
-    const c=countPlayer(p);
-    html+='<th>'+p+(c.slots>0?'<br><span style="font-size:10px;color:var(--muted);font-weight:400">('+c.slots+'/'+c.days+')</span>':'')+'</th>';
-  });
+  players.forEach(p=>{const c=countPlayer(p);html+='<th>'+p+(c.slots>0?'<br><span style="font-size:10px;color:var(--muted);font-weight:400">('+c.slots+'/'+c.days+')</span>':'')+'</th>';});
   html+='</tr></thead><tbody>';
   days.forEach(d=>{
     const ds=d.toISOString().slice(0,10);
@@ -599,7 +464,7 @@ function rAdminAvail(){
   document.getElementById("root").innerHTML=html;
 }
 
-// ── Gantt ──────────────────────────────────────────────────────
+// ── Gantt ────────────────────────────────────────────────────
 function renderGanttDay(ds,date,matchRows,showAssign){
   let html='<div class="gantt-day"><div class="gantt-title">'+fmtFull(date)+'</div>';
   matchRows.forEach(({m,slots})=>{
@@ -608,98 +473,129 @@ function renderGanttDay(ds,date,matchRows,showAssign){
     const bg=isAss?"#dce8fb":(m.type==="Einzel"?"#d0eddc":"#faeeda");
     const bdr=isAss?"#3a6fd8":(m.type==="Einzel"?"#3dab6b":"#c8860a");
     const txt=isAss?"#1a4fa0":(m.type==="Einzel"?"#164d2e":"#633806");
-
     html+='<div class="gantt-row">';
-    // Label
-    html+='<div class="gantt-label">';
-    html+='<span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
+    html+='<div class="gantt-label"><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span>';
     html+='<span style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:65px" title="'+m.p1+' vs '+m.p2+'">'+m.p1.split(" & ")[0].split(" ")[0]+'</span>';
-    if(isAss) html+='<span style="color:#3a6fd8;font-size:11px;font-weight:700">✓</span>';
+    if(isAss)html+='<span style="color:#3a6fd8;font-size:11px;font-weight:700">✓</span>';
     html+='</div>';
-    // Slots
     html+='<div class="gantt-slots">';
     slots.forEach(t=>{
       const isSel=isAss&&picked===t;
-      const dispT = slotToLocal(t, ds);
-      const ganttLabel = (userTimezone!=='Europe/Berlin'&&dispT!==t) ? t+'\n'+dispT : t;
-      html+='<div class="gantt-slot" style="'
-        +'background:'+(isSel?"#3a6fd8":bg)+';'
-        +'border-color:'+(isSel?"#1a4fa0":bdr)+';'
-        +'color:'+(isSel?"#fff":txt)+';'
-        +'cursor:'+(showAssign?"pointer":"default")+'"';
-      if(showAssign) html+=' onclick="pickSlot(\''+m.id+'\',\''+ds+'\',\''+t+'\') " title="'+t+' Uhr (Berlin) wählen"';
+      const local=slotToLocal(t,ds);
+      const label=(local!==t)?t+"\n"+local:t;
+      html+='<div class="gantt-slot" style="background:'+(isSel?"#3a6fd8":bg)+';border-color:'+(isSel?"#1a4fa0":bdr)+';color:'+(isSel?"#fff":txt)+';cursor:'+(showAssign?"pointer":"default")+'"';
+      if(showAssign)html+=' onclick="pickSlot(\''+m.id+'\',\''+ds+'\',\''+t+'\')" title="'+t+' Uhr (Berlin)"';
       html+='>'+t+'</div>';
     });
     html+='</div>';
-    // Button (admin only)
     if(showAssign){
       html+='<div class="gantt-btn">';
       if(isAss){
         html+='<span style="font-size:11px;color:#3a6fd8;font-weight:600;white-space:nowrap">'+(picked?picked+" Uhr":"–")+'</span>';
         html+='<button class="btn btn-sm" style="background:#c0392b;color:#fff;border-color:#c0392b;font-size:11px;padding:3px 7px" onclick="unpickSlot(\''+m.id+'\')">✕</button>';
-      } else {
-        html+='<span style="font-size:11px;color:var(--faint)">← Slot wählen</span>';
+      }else{
+        html+='<span style="font-size:11px;color:var(--faint)">← wählen</span>';
       }
       html+='</div>';
     }
-    html+='</div>'; // gantt-row
+    html+='</div>';
   });
   html+='</div>';
   return html;
 }
+function pickSlot(mid,day,time){S.matchAssignments[mid]=day;S.matchSlots[mid]=time;push().then(()=>rAdminPlan());}
+function unpickSlot(mid){delete S.matchAssignments[mid];delete S.matchSlots[mid];push().then(()=>rAdminPlan());}
 
-function pickSlot(mid,day,time){
-  S.matchAssignments[mid]=day;
-  S.matchSlots[mid]=time;
-  push().then(()=>rAdminPlan());
-}
-function unpickSlot(mid){
-  delete S.matchAssignments[mid];
-  delete S.matchSlots[mid];
-  push().then(()=>rAdminPlan());
-}
-
-// ── Admin Spielplan ────────────────────────────────────────────
+// ── Admin Spielplan ──────────────────────────────────────────
 function rAdminPlan(){
-  if(!S.settings.startDate){
-    document.getElementById("root").innerHTML=hdr("spielplan")+'<main class="content"><div class="card"><p class="empty-state">⚠️ Bitte zuerst ein Startdatum festlegen.</p></div></main>';
-    return;
-  }
+  if(!S.settings.startDate){document.getElementById("root").innerHTML=hdr("spielplan")+'<main class="content"><div class="card"><p class="empty-state">⚠️ Bitte zuerst ein Startdatum festlegen.</p></div></main>';return;}
   const byDay=getMatchesByDay();
-  let html=hdr("spielplan")+'<main class="content"><section class="card">';
-  html+='<h2 class="card-title">📊 Mögliche Spieltermine</h2>';
-  html+='<p class="card-desc">Grün = Einzel, Gelb = Doppel. Slot anklicken → zuweisen. Blau = fixiert.</p>';
-  if(byDay.length===0){html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';}
-  else{byDay.forEach(({ds,date,matches})=>{html+=renderGanttDay(ds,date,matches,true);});}
+  let html=hdr("spielplan")+'<main class="content"><section class="card"><h2 class="card-title">📊 Mögliche Spieltermine</h2><p class="card-desc">Slot anklicken → zuweisen. Blau = fixiert.</p>';
+  if(byDay.length===0)html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';
+  else byDay.forEach(({ds,date,matches})=>{html+=renderGanttDay(ds,date,matches,true);});
   html+='</section></main>';
   document.getElementById("root").innerHTML=html;
 }
 
-// ── Spieler Spielplan ──────────────────────────────────────────
+// ── Spieler Spielplan ────────────────────────────────────────
 function rSpielerPlan(){
   const byDay=getMatchesByDay();
-  let html=hdr("spielplan")+'<main class="content"><section class="card">';
-  html+='<h2 class="card-title">📊 Mögliche Spieltermine</h2>';
-  html+='<p class="card-desc">Grüne Slots = du und dein Gegner sind verfügbar.</p>';
-  if(byDay.length===0){html+='<p class="empty-state">Noch keine Verfügbarkeiten vorhanden.</p>';}
-  else{byDay.forEach(({ds,date,matches})=>{html+=renderGanttDay(ds,date,matches,false);});}
+  const tzLabel=TIMEZONES.find(t=>t.value===userTimezone);
+  let html=hdr("spielplan")+'<main class="content"><section class="card"><h2 class="card-title">📊 Mögliche Spieltermine</h2>';
+  html+='<p class="card-desc">Zeiten in Berlin. Deine Zeitzone: <strong>'+(tzLabel?tzLabel.label:userTimezone)+'</strong>.</p>';
+  if(byDay.length===0)html+='<p class="empty-state">Noch keine gemeinsamen Verfügbarkeiten.</p>';
+  else byDay.forEach(({ds,date,matches})=>{html+=renderGanttDay(ds,date,matches,false);});
   html+='</section></main>';
   document.getElementById("root").innerHTML=html;
 }
 
-// ── Alle Spiele ────────────────────────────────────────────────
+// ── Doppel Admin ─────────────────────────────────────────────
+function rAdminDoppel(){
+  const days=getPlayDays();
+  const d1=S.doubles.team1,d2=S.doubles.team2;
+  let html=hdr("doppel")+'<main class="content"><section class="card"><h2 class="card-title">🤝 Doppel-Verfügbarkeit</h2>';
+  html+='<p class="card-desc">Wähle ein Doppel um zu sehen wann mind. 3 von 4 Spielern können.</p>';
+  html+='<div class="field-row" style="margin-bottom:16px"><label>Doppel</label><select id="doppel-sel" onchange="selectDoppel(this.value)" style="width:auto"><option value="">– wählen –</option>';
+  for(let i=0;i<4;i++){
+    const p1=[d1[i][0],d1[i][1]].filter(p=>p);
+    const p2=[d2[i][0],d2[i][1]].filter(p=>p);
+    const names=[...p1,...p2].join(", ")||"(keine Spieler)";
+    html+='<option value="D'+(i+1)+'"'+(selectedDoppel==="D"+(i+1)?" selected":"")+'>D'+(i+1)+' — '+names+'</option>';
+  }
+  html+='</select></div>';
+  if(selectedDoppel&&days.length>0){
+    const dIdx=parseInt(selectedDoppel.slice(1))-1;
+    const allP=[...(d1[dIdx]||[]),...(d2[dIdx]||[])].filter(p=>p);
+    const total=allP.length;
+    html+='<div style="margin-bottom:12px;font-size:13px"><strong>Spieler:</strong> '+allP.join(", ")+'</div>';
+    if(total===0){html+='<p class="empty-state">Keine Spieler eingetragen.</p>';}
+    else{
+      let hasAny=false;
+      days.forEach(d=>{
+        const ds=d.toISOString().slice(0,10);
+        const slots=getSlots(d.getDay());
+        const slotData=slots.map(t=>{
+          const can=allP.filter(p=>((S.availability[p]||{})[ds]||[]).includes(t));
+          const cant=allP.filter(p=>!((S.availability[p]||{})[ds]||[]).includes(t));
+          return {t,can,cant};
+        }).filter(x=>x.can.length>=3);
+        if(slotData.length===0)return;
+        hasAny=true;
+        html+='<div style="margin-bottom:16px"><div style="font-weight:600;font-size:14px;margin-bottom:6px;color:var(--blue-text)">'+dn(d)+', '+fmt(d)+'</div>';
+        slotData.forEach(({t,can,cant})=>{
+          const allCan=cant.length===0;
+          const bg=allCan?"#d0eddc":"#faeeda";
+          const bdr=allCan?"#3dab6b":"#c8860a";
+          html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid '+bdr+';border-radius:6px;background:'+bg+';margin-bottom:5px;flex-wrap:wrap">';
+          html+='<span style="font-weight:700;font-size:13px;min-width:50px">'+t+'</span>';
+          html+='<span style="font-size:11px;background:'+(allCan?"#d0eddc":"#faeeda")+';color:'+(allCan?"#164d2e":"#633806")+';padding:1px 7px;border-radius:20px;font-weight:600">'+can.length+'/'+total+'</span>';
+          if(cant.length>0)html+='<span style="font-size:12px;color:#7a5c00">Fehlt: <strong>'+cant.join(", ")+'</strong></span>';
+          else html+='<span style="font-size:12px;color:#164d2e">Alle verfügbar ✓</span>';
+          html+='</div>';
+        });
+        html+='</div>';
+      });
+      if(!hasAny)html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';
+    }
+  }else if(!selectedDoppel){html+='<p class="empty-state">Bitte ein Doppel auswählen.</p>';}
+  else{html+='<p class="empty-state">Kein Startdatum gesetzt.</p>';}
+  html+='</section></main>';
+  document.getElementById("root").innerHTML=html;
+}
+function selectDoppel(val){selectedDoppel=val;rAdminDoppel();}
+
+// ── Alle Spiele ──────────────────────────────────────────────
 function rSpiele(){
   const matches=buildMatches();
   function tbl(list){
-    let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>Termin</th></tr></thead><tbody>';
+    let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>Termin (Berlin)</th></tr></thead><tbody>';
     list.forEach(m=>{
       const ds=S.matchAssignments[m.id],d=ds?new Date(ds):null;
       const slot=S.matchSlots[m.id];
       let timeStr="–";
-      if(d) timeStr=dn(d).slice(0,2)+". "+fmt(d)+(slot?", "+slot+" Uhr":"");
+      if(d)timeStr=dn(d).slice(0,2)+". "+fmt(d)+(slot?", "+slot+" Uhr":"");
       t+='<tr><td><span class="tag '+(m.type==="Einzel"?"tag-blue":"tag-green")+'">'+m.id+'</span></td>';
-      t+='<td>'+m.p1+'</td><td class="vs-cell">vs</td><td>'+m.p2+'</td>';
-      t+='<td class="date-cell">'+timeStr+'</td></tr>';
+      t+='<td>'+m.p1+'</td><td class="vs-cell">vs</td><td>'+m.p2+'</td><td class="date-cell">'+timeStr+'</td></tr>';
     });
     return t+'</tbody></table>';
   }
@@ -707,102 +603,6 @@ function rSpiele(){
     +'<section class="card"><h2 class="card-title">🏆 Einzel (E1–E8)</h2>'+tbl(matches.filter(m=>m.type==="Einzel"))+'</section>'
     +'<section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
 }
-
-function rAdminDoppel(){
-  const days=getPlayDays();
-  const d1=S.doubles.team1, d2=S.doubles.team2;
-
-  // Build list of doubles
-  const doubles=[];
-  for(let i=0;i<4;i++){
-    doubles.push({id:"D"+(i+1),team:"team1",players:[d1[i][0],d1[i][1]].filter(p=>p)});
-    doubles.push({id:"D"+(i+1),team:"team2",players:[d2[i][0],d2[i][1]].filter(p=>p)});
-  }
-  // Unique doubles by id+team
-  const doppelList=[];
-  for(let i=0;i<4;i++){
-    const p1=[d1[i][0],d1[i][1]].filter(p=>p);
-    const p2=[d2[i][0],d2[i][1]].filter(p=>p);
-    const allP=[...p1,...p2];
-    doppelList.push({id:"D"+(i+1),players:allP,p1,p2});
-  }
-
-  let html=hdr("doppel")+'<main class="content"><section class="card">';
-  html+='<h2 class="card-title">🤝 Doppel-Verfügbarkeit</h2>';
-  html+='<p class="card-desc">Wähle ein Doppel um zu sehen wann 3 oder 4 Spieler können.</p>';
-
-  // Doppel selector
-  html+='<div class="field-row" style="margin-bottom:16px"><label>Doppel auswählen</label>';
-  html+='<select id="doppel-sel" onchange="selectDoppel(this.value)" style="width:auto">';
-  html+='<option value="">– Doppel wählen –</option>';
-  doppelList.forEach(d=>{
-    const names=d.players.join(", ")||"(keine Spieler)";
-    html+='<option value="'+d.id+'"'+(selectedDoppel===d.id?" selected":"")+'>'+d.id+' — '+names+'</option>';
-  });
-  html+='</select></div>';
-
-  if(selectedDoppel&&days.length>0){
-    const dIdx=parseInt(selectedDoppel.slice(1))-1;
-    const allPlayers=[...(d1[dIdx]||[]),...(d2[dIdx]||[])].filter(p=>p);
-    const total=allPlayers.length;
-
-    html+='<div style="margin-bottom:8px;font-size:13px"><strong>Spieler:</strong> '+allPlayers.join(", ")+'</div>';
-
-    if(total===0){
-      html+='<p class="empty-state">Keine Spieler für dieses Doppel eingetragen.</p>';
-    } else {
-      // For each day, find all slots where at least 3 of 4 (or all) can
-      let hasAny=false;
-      days.forEach(d=>{
-        const ds=d.toISOString().slice(0,10);
-        const slots=getSlots(d.getDay());
-
-        // Per slot: who can, who cant
-        const slotData=[];
-        slots.forEach(t=>{
-          const canPlay=allPlayers.filter(p=>((S.availability[p]||{})[ds]||[]).includes(t));
-          const cantPlay=allPlayers.filter(p=>!((S.availability[p]||{})[ds]||[]).includes(t));
-          if(canPlay.length>=3) slotData.push({t,canPlay,cantPlay});
-        });
-
-        if(slotData.length===0) return;
-        hasAny=true;
-
-        html+='<div style="margin-bottom:16px">';
-        html+='<div style="font-weight:600;font-size:14px;margin-bottom:6px;color:var(--blue-text)">'+dn(d)+', '+fmt(d)+'</div>';
-
-        slotData.forEach(({t,canPlay,cantPlay})=>{
-          const allCan=cantPlay.length===0;
-          const bg=allCan?"#d0eddc":"#faeeda";
-          const bdr=allCan?"#3dab6b":"#c8860a";
-          const badge=allCan
-            ?'<span style="font-size:11px;background:#d0eddc;color:#164d2e;padding:1px 7px;border-radius:20px;font-weight:600">alle '+total+'</span>'
-            :'<span style="font-size:11px;background:#faeeda;color:#633806;padding:1px 7px;border-radius:20px;font-weight:600">'+canPlay.length+'/'+total+'</span>';
-
-          html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid '+bdr+';border-radius:6px;background:'+bg+';margin-bottom:5px;flex-wrap:wrap">';
-          html+='<span style="font-weight:700;font-size:13px;min-width:45px">'+t+'</span>';
-          html+=badge;
-          if(cantPlay.length>0){
-            html+='<span style="font-size:12px;color:#7a5c00">Fehlt: <strong>'+cantPlay.join(", ")+'</strong></span>';
-          } else {
-            html+='<span style="font-size:12px;color:#164d2e">Alle verfügbar ✓</span>';
-          }
-          html+='</div>';
-        });
-        html+='</div>';
-      });
-      if(!hasAny) html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';
-    }
-  } else if(!selectedDoppel){
-    html+='<p class="empty-state">Bitte ein Doppel auswählen.</p>';
-  } else {
-    html+='<p class="empty-state">Kein Startdatum gesetzt.</p>';
-  }
-
-  html+='</section></main>';
-  document.getElementById("root").innerHTML=html;
-}
-function selectDoppel(val){selectedDoppel=val;rAdminDoppel();}
 
 rLogin();
 </script>
