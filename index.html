@@ -128,7 +128,7 @@ const DEF = {
 };
 
 let S=JSON.parse(JSON.stringify(DEF));
-let currentUser=null,currentView="login",loginRole=null,dragSrc=null,selectedSpieler=null;
+let currentUser=null,currentView="login",loginRole=null,dragSrc=null,selectedSpieler=null,selectedDoppel=null;
 
 async function loadData(){
   try{
@@ -251,7 +251,7 @@ function hdr(tab){
 
 function setView(v){currentView=v;render();}
 function render(){
-  ({login:rLogin,admin:rAdmin,admin_avail:rAdminAvail,admin_plan:rAdminPlan,spieler_avail:rSpielerAvail,spieler_plan:rSpielerPlan,spiele:rSpiele}[currentView]||rLogin)();
+  ({login:rLogin,admin:rAdmin,admin_avail:rAdminAvail,admin_plan:rAdminPlan,admin_doppel:rAdminDoppel,spieler_avail:rSpielerAvail,spieler_plan:rSpielerPlan,spiele:rSpiele}[currentView]||rLogin)();
 }
 
 // ── Login ──────────────────────────────────────────────────────
@@ -272,7 +272,103 @@ function rLogin(){
     +'<button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>'
     +'</div></div></div>';
 }
-function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
+function selRole(r){loginRole=r;function rAdminDoppel(){
+  const days=getPlayDays();
+  const d1=S.doubles.team1, d2=S.doubles.team2;
+
+  // Build list of doubles
+  const doubles=[];
+  for(let i=0;i<4;i++){
+    doubles.push({id:"D"+(i+1),team:"team1",players:[d1[i][0],d1[i][1]].filter(p=>p)});
+    doubles.push({id:"D"+(i+1),team:"team2",players:[d2[i][0],d2[i][1]].filter(p=>p)});
+  }
+  // Unique doubles by id+team
+  const doppelList=[];
+  for(let i=0;i<4;i++){
+    const p1=[d1[i][0],d1[i][1]].filter(p=>p);
+    const p2=[d2[i][0],d2[i][1]].filter(p=>p);
+    const allP=[...p1,...p2];
+    doppelList.push({id:"D"+(i+1),players:allP,p1,p2});
+  }
+
+  let html=hdr("doppel")+'<main class="content"><section class="card">';
+  html+='<h2 class="card-title">🤝 Doppel-Verfügbarkeit</h2>';
+  html+='<p class="card-desc">Wähle ein Doppel um zu sehen wann 3 oder 4 Spieler können.</p>';
+
+  // Doppel selector
+  html+='<div class="field-row" style="margin-bottom:16px"><label>Doppel auswählen</label>';
+  html+='<select id="doppel-sel" onchange="selectDoppel(this.value)" style="width:auto">';
+  html+='<option value="">– Doppel wählen –</option>';
+  doppelList.forEach(d=>{
+    const names=d.players.join(", ")||"(keine Spieler)";
+    html+='<option value="'+d.id+'"'+(selectedDoppel===d.id?" selected":"")+'>'+d.id+' — '+names+'</option>';
+  });
+  html+='</select></div>';
+
+  if(selectedDoppel&&days.length>0){
+    const dIdx=parseInt(selectedDoppel.slice(1))-1;
+    const allPlayers=[...(d1[dIdx]||[]),...(d2[dIdx]||[])].filter(p=>p);
+    const total=allPlayers.length;
+
+    html+='<div style="margin-bottom:8px;font-size:13px"><strong>Spieler:</strong> '+allPlayers.join(", ")+'</div>';
+
+    if(total===0){
+      html+='<p class="empty-state">Keine Spieler für dieses Doppel eingetragen.</p>';
+    } else {
+      // For each day, find all slots where at least 3 of 4 (or all) can
+      let hasAny=false;
+      days.forEach(d=>{
+        const ds=d.toISOString().slice(0,10);
+        const slots=getSlots(d.getDay());
+
+        // Per slot: who can, who cant
+        const slotData=[];
+        slots.forEach(t=>{
+          const canPlay=allPlayers.filter(p=>((S.availability[p]||{})[ds]||[]).includes(t));
+          const cantPlay=allPlayers.filter(p=>!((S.availability[p]||{})[ds]||[]).includes(t));
+          if(canPlay.length>=3) slotData.push({t,canPlay,cantPlay});
+        });
+
+        if(slotData.length===0) return;
+        hasAny=true;
+
+        html+='<div style="margin-bottom:16px">';
+        html+='<div style="font-weight:600;font-size:14px;margin-bottom:6px;color:var(--blue-text)">'+dn(d)+', '+fmt(d)+'</div>';
+
+        slotData.forEach(({t,canPlay,cantPlay})=>{
+          const allCan=cantPlay.length===0;
+          const bg=allCan?"#d0eddc":"#faeeda";
+          const bdr=allCan?"#3dab6b":"#c8860a";
+          const badge=allCan
+            ?'<span style="font-size:11px;background:#d0eddc;color:#164d2e;padding:1px 7px;border-radius:20px;font-weight:600">alle '+total+'</span>'
+            :'<span style="font-size:11px;background:#faeeda;color:#633806;padding:1px 7px;border-radius:20px;font-weight:600">'+canPlay.length+'/'+total+'</span>';
+
+          html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid '+bdr+';border-radius:6px;background:'+bg+';margin-bottom:5px;flex-wrap:wrap">';
+          html+='<span style="font-weight:700;font-size:13px;min-width:45px">'+t+'</span>';
+          html+=badge;
+          if(cantPlay.length>0){
+            html+='<span style="font-size:12px;color:#7a5c00">Fehlt: <strong>'+cantPlay.join(", ")+'</strong></span>';
+          } else {
+            html+='<span style="font-size:12px;color:#164d2e">Alle verfügbar ✓</span>';
+          }
+          html+='</div>';
+        });
+        html+='</div>';
+      });
+      if(!hasAny) html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';
+    }
+  } else if(!selectedDoppel){
+    html+='<p class="empty-state">Bitte ein Doppel auswählen.</p>';
+  } else {
+    html+='<p class="empty-state">Kein Startdatum gesetzt.</p>';
+  }
+
+  html+='</section></main>';
+  document.getElementById("root").innerHTML=html;
+}
+function selectDoppel(val){selectedDoppel=val;rAdminDoppel();}
+
+rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
 async function doLogin(){
   const p=document.getElementById("lp").value;
   if(loginRole==="admin"&&p==="jaaxjaax"){currentUser="admin";await loadData();setView("admin");}
@@ -545,6 +641,102 @@ function rSpiele(){
     +'<section class="card"><h2 class="card-title">🏆 Einzel (E1–E8)</h2>'+tbl(matches.filter(m=>m.type==="Einzel"))+'</section>'
     +'<section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
 }
+
+function rAdminDoppel(){
+  const days=getPlayDays();
+  const d1=S.doubles.team1, d2=S.doubles.team2;
+
+  // Build list of doubles
+  const doubles=[];
+  for(let i=0;i<4;i++){
+    doubles.push({id:"D"+(i+1),team:"team1",players:[d1[i][0],d1[i][1]].filter(p=>p)});
+    doubles.push({id:"D"+(i+1),team:"team2",players:[d2[i][0],d2[i][1]].filter(p=>p)});
+  }
+  // Unique doubles by id+team
+  const doppelList=[];
+  for(let i=0;i<4;i++){
+    const p1=[d1[i][0],d1[i][1]].filter(p=>p);
+    const p2=[d2[i][0],d2[i][1]].filter(p=>p);
+    const allP=[...p1,...p2];
+    doppelList.push({id:"D"+(i+1),players:allP,p1,p2});
+  }
+
+  let html=hdr("doppel")+'<main class="content"><section class="card">';
+  html+='<h2 class="card-title">🤝 Doppel-Verfügbarkeit</h2>';
+  html+='<p class="card-desc">Wähle ein Doppel um zu sehen wann 3 oder 4 Spieler können.</p>';
+
+  // Doppel selector
+  html+='<div class="field-row" style="margin-bottom:16px"><label>Doppel auswählen</label>';
+  html+='<select id="doppel-sel" onchange="selectDoppel(this.value)" style="width:auto">';
+  html+='<option value="">– Doppel wählen –</option>';
+  doppelList.forEach(d=>{
+    const names=d.players.join(", ")||"(keine Spieler)";
+    html+='<option value="'+d.id+'"'+(selectedDoppel===d.id?" selected":"")+'>'+d.id+' — '+names+'</option>';
+  });
+  html+='</select></div>';
+
+  if(selectedDoppel&&days.length>0){
+    const dIdx=parseInt(selectedDoppel.slice(1))-1;
+    const allPlayers=[...(d1[dIdx]||[]),...(d2[dIdx]||[])].filter(p=>p);
+    const total=allPlayers.length;
+
+    html+='<div style="margin-bottom:8px;font-size:13px"><strong>Spieler:</strong> '+allPlayers.join(", ")+'</div>';
+
+    if(total===0){
+      html+='<p class="empty-state">Keine Spieler für dieses Doppel eingetragen.</p>';
+    } else {
+      // For each day, find all slots where at least 3 of 4 (or all) can
+      let hasAny=false;
+      days.forEach(d=>{
+        const ds=d.toISOString().slice(0,10);
+        const slots=getSlots(d.getDay());
+
+        // Per slot: who can, who cant
+        const slotData=[];
+        slots.forEach(t=>{
+          const canPlay=allPlayers.filter(p=>((S.availability[p]||{})[ds]||[]).includes(t));
+          const cantPlay=allPlayers.filter(p=>!((S.availability[p]||{})[ds]||[]).includes(t));
+          if(canPlay.length>=3) slotData.push({t,canPlay,cantPlay});
+        });
+
+        if(slotData.length===0) return;
+        hasAny=true;
+
+        html+='<div style="margin-bottom:16px">';
+        html+='<div style="font-weight:600;font-size:14px;margin-bottom:6px;color:var(--blue-text)">'+dn(d)+', '+fmt(d)+'</div>';
+
+        slotData.forEach(({t,canPlay,cantPlay})=>{
+          const allCan=cantPlay.length===0;
+          const bg=allCan?"#d0eddc":"#faeeda";
+          const bdr=allCan?"#3dab6b":"#c8860a";
+          const badge=allCan
+            ?'<span style="font-size:11px;background:#d0eddc;color:#164d2e;padding:1px 7px;border-radius:20px;font-weight:600">alle '+total+'</span>'
+            :'<span style="font-size:11px;background:#faeeda;color:#633806;padding:1px 7px;border-radius:20px;font-weight:600">'+canPlay.length+'/'+total+'</span>';
+
+          html+='<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border:1px solid '+bdr+';border-radius:6px;background:'+bg+';margin-bottom:5px;flex-wrap:wrap">';
+          html+='<span style="font-weight:700;font-size:13px;min-width:45px">'+t+'</span>';
+          html+=badge;
+          if(cantPlay.length>0){
+            html+='<span style="font-size:12px;color:#7a5c00">Fehlt: <strong>'+cantPlay.join(", ")+'</strong></span>';
+          } else {
+            html+='<span style="font-size:12px;color:#164d2e">Alle verfügbar ✓</span>';
+          }
+          html+='</div>';
+        });
+        html+='</div>';
+      });
+      if(!hasAny) html+='<p class="empty-state">Noch keine Verfügbarkeiten eingetragen.</p>';
+    }
+  } else if(!selectedDoppel){
+    html+='<p class="empty-state">Bitte ein Doppel auswählen.</p>';
+  } else {
+    html+='<p class="empty-state">Kein Startdatum gesetzt.</p>';
+  }
+
+  html+='</section></main>';
+  document.getElementById("root").innerHTML=html;
+}
+function selectDoppel(val){selectedDoppel=val;rAdminDoppel();}
 
 rLogin();
 </script>
