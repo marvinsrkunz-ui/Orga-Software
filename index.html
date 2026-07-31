@@ -287,7 +287,6 @@ function render(){
 
 // ── Login ────────────────────────────────────────────────────
 function rLogin(){
-  const tzOpts=TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?" selected":"")+">"+tz.label+"</option>").join("");
   document.getElementById("root").innerHTML=
     '<div class="login-wrap"><div class="login-card">'
     +'<div class="login-logo">🍺</div>'
@@ -296,10 +295,6 @@ function rLogin(){
     +'<div class="role-picker">'
     +'<button class="role-btn '+(loginRole==="admin"?"active":"")+'" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>'
     +'<button class="role-btn '+(loginRole==="spieler"?"active":"")+'" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>'
-    +'</div>'
-    +'<div class="field" style="margin-bottom:16px">'
-    +'<label>Deine Zeitzone</label>'
-    +'<select id="tz-sel" onchange="userTimezone=this.value" style="width:100%">'+tzOpts+'</select>'
     +'</div>'
     +'<div id="pw-section" style="display:'+(loginRole?"block":"none")+'">'
     +'<div class="field"><label>'+(loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort")+'</label>'
@@ -311,7 +306,6 @@ function rLogin(){
 function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
 async function doLogin(){
   const p=document.getElementById("lp").value;
-  userTimezone=document.getElementById("tz-sel").value;
   if(loginRole==="admin"&&p==="jaaxjaax"){currentUser="admin";await loadData();setView("admin");}
   else if(loginRole==="spieler"){
     document.getElementById("lp").disabled=true;
@@ -397,11 +391,17 @@ function rSpielerAvail(){
   const days=getPlayDays(),players=allPlayers();
   const tzLabel=TIMEZONES.find(t=>t.value===userTimezone);
   let html=hdr("verfuegbarkeit")+'<main class="content"><section class="card"><h2 class="card-title">📅 Deine Verfügbarkeit</h2>';
-  html+='<p class="card-desc">Klicke die Zeitslots an — Zeiten in <strong>'+(tzLabel?tzLabel.label:userTimezone)+'</strong>. '
-       +'<a href="#" onclick="logout();return false;" style="color:var(--blue);font-size:12px">Zeitzone ändern</a></p>';
+  html+='<p class="card-desc">Wähle deinen Namen und klicke die Zeitslots an. Zeiten werden in deiner gewählten Zeitzone angezeigt und automatisch in Berliner Zeit gespeichert.</p>';
   html+='<div class="field-row"><label>Dein Name</label><select id="spieler-name" onchange="onSpielerSelect(this.value)" style="width:200px"><option value="">– Name wählen –</option>';
   players.forEach(p=>{html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+">"+p+"</option>";});
   html+='</select></div>';
+  if(selectedSpieler){
+    const tzOpts2=TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?" selected":"")+">"+tz.label+"</option>").join("");
+    html+='<div class="field-row"><label>Deine Zeitzone</label>'
+         +'<select onchange="userTimezone=this.value;rSpielerAvail()" style="width:220px">'+tzOpts2+'</select></div>';
+    const tzLabel2=TIMEZONES.find(t=>t.value===userTimezone);
+    html+='<p style="font-size:12px;color:var(--muted);margin-bottom:12px">⏰ Zeiten werden in <strong>'+(tzLabel2?tzLabel2.label:userTimezone)+'</strong> angezeigt.</p>';
+  }
   if(selectedSpieler&&days.length>0){
     const avData=S.availability[selectedSpieler]||{};
     let totalSlots=0,totalDays=0;
@@ -447,6 +447,7 @@ function rAdminAvail(){
     days.forEach(d=>{const cnt=((S.availability[p]||{})[d.toISOString().slice(0,10)]||[]).length;if(cnt>0){slots+=cnt;daysC++;}});
     return {slots,days:daysC};
   }
+  html+='<p style="font-size:12px;color:var(--muted);margin-bottom:10px">⏰ Alle Zeiten in <strong>Berliner Zeit (Europe/Berlin)</strong></p>';
   html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th>';
   players.forEach(p=>{const c=countPlayer(p);html+='<th>'+p+(c.slots>0?'<br><span style="font-size:10px;color:var(--muted);font-weight:400">('+c.slots+'/'+c.days+')</span>':'')+'</th>';});
   html+='</tr></thead><tbody>';
