@@ -164,6 +164,98 @@ let S=JSON.parse(JSON.stringify(DEF));
 let currentUser=null,currentView="login",loginRole=null,dragSrc=null,selectedSpieler=null,selectedDoppel=null;
 let userTimezone="Europe/Berlin";
 let playerTimezones={}; // { spielername: "Europe/Berlin" }
+let lang = localStorage.getItem('bp_lang') || 'de';
+
+const T = {
+  de: {
+    appName:"Beerpong Liga", whoAreYou:"Wer bist du?", admin:"Admin", player:"Spieler",
+    adminPw:"Admin-Passwort", playerPw:"Spieler-Passwort", password:"Passwort",
+    login:"Anmelden", wrongPw:"Falsches Passwort.", logout:"Abmelden",
+    settings:"Einstellungen", availability:"Verfügbarkeit", schedule:"Spielplan",
+    doubles:"Doppel", allGames:"Alle Spiele",
+    playerPassword:"Spieler-Passwort", currentPassword:"Aktuelles Passwort",
+    notSet:"Nicht gesetzt", startDate:"Startdatum", save:"Speichern",
+    dayPriority:"Tagespriorisierung", prioDesc:"Oben = höchste Priorität im Spielplan.",
+    teamsPlayers:"Teams & Spieler", savePlayers:"Spieler speichern",
+    doublesLineup:"Doppelaufstellung", saveDoubles:"Doppel speichern",
+    reset:"Reset", resetDesc:"Alle Daten zurücksetzen.", resetBtn:"🗑 Zurücksetzen",
+    resetConfirm:"Wirklich alle Daten zurücksetzen?", resetDone:"Zurückgesetzt ✓",
+    yourAvail:"Deine Verfügbarkeit", yourName:"Dein Name", chooseName:"– Name wählen –",
+    yourTimezone:"Deine Zeitzone", timesIn:"Zeiten in", changeTimezone:"Zeitzone ändern",
+    totalSlots:"Gesamt:", slotsAt:"Slots an", days:"Tagen",
+    availOverview:"Verfügbarkeitsübersicht", allTimesIn:"Alle Zeiten in Berliner Zeit (Europe/Berlin)",
+    possibleTimes:"Mögliche Spieltermine", clickToAssign:"Slot anklicken → zuweisen. Blau = fixiert.",
+    noAvail:"Noch keine Verfügbarkeiten eingetragen.", noStart:"Kein Startdatum gesetzt.",
+    noCommon:"Noch keine gemeinsamen Verfügbarkeiten.", assignedTimes:"⏰ Alle Zeiten in Berliner Zeit",
+    doublesAvail:"Doppel-Verfügbarkeit", doublesDesc:"Wähle ein Doppel um zu sehen wann mind. 3 von 4 Spielern können.",
+    selectDouble:"– wählen –", noPlayers:"Keine Spieler eingetragen.", allAvail:"Alle verfügbar ✓",
+    missing:"Fehlt:", singles:"Einzel (E1–E8)", doublesGames:"Doppel (D1–D4)",
+    appointment:"Termin (Berlin)", noDate:"–", chooseSlot:"← wählen", assigned:"✓",
+    startsDates:"Spieltage starten ab", chooseDouble:"Bitte ein Doppel auswählen.",
+    selectPlayer:"Bitte Namen auswählen.", noStartDate:"Noch kein Startdatum vom Admin gesetzt.",
+    saved:"Gespeichert ✓", prioSaved:"Priorisierung gespeichert ✓", hour:"Uhr",
+    team1:"Team 1", team2:"Team 2", choose:"– wählen –",
+  },
+  en: {
+    appName:"Beerpong League", whoAreYou:"Who are you?", admin:"Admin", player:"Player",
+    adminPw:"Admin password", playerPw:"Player password", password:"Password",
+    login:"Sign in", wrongPw:"Wrong password.", logout:"Sign out",
+    settings:"Settings", availability:"Availability", schedule:"Schedule",
+    doubles:"Doubles", allGames:"All Games",
+    playerPassword:"Player password", currentPassword:"Current password",
+    notSet:"Not set", startDate:"Start date", save:"Save",
+    dayPriority:"Day priority", prioDesc:"Top = highest priority in schedule.",
+    teamsPlayers:"Teams & Players", savePlayers:"Save players",
+    doublesLineup:"Doubles lineup", saveDoubles:"Save doubles",
+    reset:"Reset", resetDesc:"Reset all data.", resetBtn:"🗑 Reset all",
+    resetConfirm:"Really reset all data?", resetDone:"Reset ✓",
+    yourAvail:"Your availability", yourName:"Your name", chooseName:"– choose name –",
+    yourTimezone:"Your timezone", timesIn:"Times in", changeTimezone:"Change timezone",
+    totalSlots:"Total:", slotsAt:"slots on", days:"days",
+    availOverview:"Availability overview", allTimesIn:"All times in Berlin time (Europe/Berlin)",
+    possibleTimes:"Possible match times", clickToAssign:"Click slot → assign. Blue = fixed.",
+    noAvail:"No availability entered yet.", noStart:"No start date set.",
+    noCommon:"No common availability yet.", assignedTimes:"⏰ All times in Berlin time",
+    doublesAvail:"Doubles availability", doublesDesc:"Choose a double to see when 3 or 4 players are free.",
+    selectDouble:"– choose –", noPlayers:"No players entered.", allAvail:"All available ✓",
+    missing:"Missing:", singles:"Singles (E1–E8)", doublesGames:"Doubles (D1–D4)",
+    appointment:"Match time (Berlin)", noDate:"–", chooseSlot:"← choose", assigned:"✓",
+    startsDates:"Match days start from", chooseDouble:"Please choose a double.",
+    selectPlayer:"Please choose your name.", noStartDate:"No start date set by admin yet.",
+    saved:"Saved ✓", prioSaved:"Priority saved ✓", hour:"h",
+    team1:"Team 1", team2:"Team 2", choose:"– choose –",
+  },
+  tr: {
+    appName:"Beerpong Ligi", whoAreYou:"Sen kimsin?", admin:"Yönetici", player:"Oyuncu",
+    adminPw:"Yönetici şifresi", playerPw:"Oyuncu şifresi", password:"Şifre",
+    login:"Giriş yap", wrongPw:"Yanlış şifre.", logout:"Çıkış yap",
+    settings:"Ayarlar", availability:"Müsaitlik", schedule:"Program",
+    doubles:"Çiftler", allGames:"Tüm Oyunlar",
+    playerPassword:"Oyuncu şifresi", currentPassword:"Mevcut şifre",
+    notSet:"Ayarlanmadı", startDate:"Başlangıç tarihi", save:"Kaydet",
+    dayPriority:"Gün önceliği", prioDesc:"Üst = programda en yüksek öncelik.",
+    teamsPlayers:"Takımlar & Oyuncular", savePlayers:"Oyuncuları kaydet",
+    doublesLineup:"Çiftler kadrosu", saveDoubles:"Çiftleri kaydet",
+    reset:"Sıfırla", resetDesc:"Tüm verileri sıfırla.", resetBtn:"🗑 Tümünü sıfırla",
+    resetConfirm:"Tüm veriler silinsin mi?", resetDone:"Sıfırlandı ✓",
+    yourAvail:"Müsaitliğin", yourName:"Adın", chooseName:"– ad seç –",
+    yourTimezone:"Saat diliminiz", timesIn:"Saatler", changeTimezone:"Saat dilimini değiştir",
+    totalSlots:"Toplam:", slotsAt:"slot,", days:"gün",
+    availOverview:"Müsaitlik özeti", allTimesIn:"Tüm saatler Berlin saatiyle (Europe/Berlin)",
+    possibleTimes:"Olası maç saatleri", clickToAssign:"Slota tıkla → ata. Mavi = sabitlendi.",
+    noAvail:"Henüz müsaitlik girilmedi.", noStart:"Başlangıç tarihi yok.",
+    noCommon:"Henüz ortak müsaitlik yok.", assignedTimes:"⏰ Tüm saatler Berlin saatiyle",
+    doublesAvail:"Çift müsaitliği", doublesDesc:"4 oyuncudan en az 3'ünün uygun olduğu zamanları görün.",
+    selectDouble:"– seç –", noPlayers:"Oyuncu girilmedi.", allAvail:"Herkes müsait ✓",
+    missing:"Eksik:", singles:"Tekler (E1–E8)", doublesGames:"Çiftler (D1–D4)",
+    appointment:"Maç zamanı (Berlin)", noDate:"–", chooseSlot:"← seç", assigned:"✓",
+    startsDates:"Oyun günleri başlıyor", chooseDouble:"Lütfen bir çift seçin.",
+    selectPlayer:"Lütfen adınızı seçin.", noStartDate:"Yönetici henüz başlangıç tarihi belirlemedi.",
+    saved:"Kaydedildi ✓", prioSaved:"Öncelik kaydedildi ✓", hour:"saat",
+    team1:"Takım 1", team2:"Takım 2", choose:"– seç –",
+  }
+};
+function t(key){ return (T[lang]&&T[lang][key]) || T.de[key] || key; }
 
 // Convert Berlin time slot to user's local time for display
 function slotToLocal(slot, dateStr) {
@@ -284,6 +376,13 @@ function toast(msg,err){
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity="0",2800);
 }
 
+function langBar(){
+  return '<div style="position:fixed;top:10px;right:14px;z-index:999;display:flex;gap:4px">'
+    +['de','en','tr'].map(l=>'<button onclick="setLang(''+l+'')" style="padding:3px 9px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:'+(lang===l?'var(--blue)':'var(--surface)')+';color:'+(lang===l?'#fff':'var(--muted)')+'">'+{de:'DE',en:'EN',tr:'TR'}[l]+'</button>').join('')
+    +'</div>';
+}
+function setLang(l){lang=l;localStorage.setItem('bp_lang',l);render();}
+
 function hdr(tab){
   const isAdmin=currentUser==="admin";
   let nav="";
@@ -292,10 +391,10 @@ function hdr(tab){
   nav+='<button class="nav-btn '+(tab==="spielplan"?"active":"")+'" onclick="setView(currentUser===\'admin\'?\'admin_plan\':\'spieler_plan\')">Spielplan</button>';
   if(isAdmin) nav+='<button class="nav-btn '+(tab==="doppel"?"active":"")+'" onclick="setView(\'admin_doppel\')">Doppel</button>';
   nav+='<button class="nav-btn '+(tab==="spiele"?"active":"")+'" onclick="setView(\'spiele\')">Alle Spiele</button>';
-  return '<header class="topbar"><div class="topbar-brand"><span style="font-size:20px">🍺</span><span>Beerpong Liga</span></div>'
+  return langBar()+'<header class="topbar"><div class="topbar-brand"><span style="font-size:20px">🍺</span><span>'+t('appName')+'</span></div>'
     +'<nav class="topbar-nav">'+nav+'</nav>'
     +'<div class="topbar-user"><span class="user-name">'+currentUser+'</span>'
-    +'<button class="btn btn-ghost btn-sm" onclick="logout()">Abmelden</button></div></header>';
+    +'<button class="btn btn-ghost btn-sm" onclick="logout()">'+t('logout')+'</button></div></header>';
 }
 
 function setView(v){currentView=v;render();}
@@ -307,19 +406,20 @@ function render(){
 // ── Login ────────────────────────────────────────────────────
 function rLogin(){
   document.getElementById("root").innerHTML=
+    langBar()+
     '<div class="login-wrap"><div class="login-card">'
     +'<div class="login-logo">🍺</div>'
-    +'<h1 class="login-title">Beerpong Liga</h1>'
-    +'<p class="login-sub">Wer bist du?</p>'
+    +'<h1 class="login-title">'+t('appName')+'</h1>'
+    +'<p class="login-sub">'+t('whoAreYou')+'</p>'
     +'<div class="role-picker">'
     +'<button class="role-btn '+(loginRole==="admin"?"active":"")+'" onclick="selRole(\'admin\')"><span class="role-icon">🔧</span><span class="role-label">Admin</span></button>'
     +'<button class="role-btn '+(loginRole==="spieler"?"active":"")+'" onclick="selRole(\'spieler\')"><span class="role-icon">🏓</span><span class="role-label">Spieler</span></button>'
     +'</div>'
     +'<div id="pw-section" style="display:'+(loginRole?"block":"none")+'">'
     +'<div class="field"><label>'+(loginRole==="admin"?"Admin-Passwort":"Spieler-Passwort")+'</label>'
-    +'<input id="lp" type="password" placeholder="Passwort" style="width:100%" onkeydown="if(event.key===\'Enter\')doLogin()" /></div>'
-    +'<p class="err-msg" id="lerr" style="display:none">Falsches Passwort.</p>'
-    +'<button class="btn btn-primary btn-full" onclick="doLogin()">Anmelden</button>'
+    +'<input id="lp" type="password" placeholder="'+t('password')+'"' style="width:100%" onkeydown="if(event.key===\'Enter\')doLogin()" /></div>'
+    +'<p class="err-msg" id="lerr" style="display:none">'+t('wrongPw')+'</p>'
+    +'<button class="btn btn-primary btn-full" onclick="doLogin()">'+t('login')+'</button>'
     +'</div></div></div>';
 }
 function selRole(r){loginRole=r;rLogin();setTimeout(()=>{const el=document.getElementById("lp");if(el)el.focus();},50);}
@@ -411,12 +511,12 @@ function rSpielerAvail(){
   const tzLabel=TIMEZONES.find(t=>t.value===userTimezone);
   let html=hdr("verfuegbarkeit")+'<main class="content"><section class="card"><h2 class="card-title">📅 Deine Verfügbarkeit</h2>';
   html+='<p class="card-desc">Wähle deinen Namen und klicke die Zeitslots an. Zeiten werden in deiner gewählten Zeitzone angezeigt und automatisch in Berliner Zeit gespeichert.</p>';
-  html+='<div class="field-row"><label>Dein Name</label><select id="spieler-name" onchange="onSpielerSelect(this.value)" style="width:200px"><option value="">– Name wählen –</option>';
+  html+='<div class="field-row"><label>'+t('yourName')+'</label><select id="spieler-name" onchange="onSpielerSelect(this.value)" style="width:200px"><option value="">– Name wählen –</option>';
   players.forEach(p=>{html+='<option value="'+p+'"'+(selectedSpieler===p?" selected":"")+">"+p+"</option>";});
   html+='</select></div>';
   if(selectedSpieler){
     const tzOpts2=TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?" selected":"")+">"+tz.label+"</option>").join("");
-    html+='<div class="field-row"><label>Deine Zeitzone</label>'
+    html+='<div class="field-row"><label>'+t('yourTimezone')+'</label>'
          +'<select onchange="userTimezone=this.value;playerTimezones[selectedSpieler]=this.value;rSpielerAvail()" style="width:220px">'+tzOpts2+'</select></div>';
     const tzLabel2=TIMEZONES.find(t=>t.value===userTimezone);
     html+='<p style="font-size:12px;color:var(--muted);margin-bottom:12px">⏰ Zeiten werden in <strong>'+(tzLabel2?tzLabel2.label:userTimezone)+'</strong> angezeigt.</p>';
@@ -471,7 +571,7 @@ function rAdminAvail(){
     days.forEach(d=>{const cnt=((S.availability[p]||{})[d.toISOString().slice(0,10)]||[]).length;if(cnt>0){slots+=cnt;daysC++;}});
     return {slots,days:daysC};
   }
-  html+='<p style="font-size:12px;color:var(--muted);margin-bottom:10px">⏰ Alle Zeiten in <strong>Berliner Zeit (Europe/Berlin)</strong></p>';
+  html+='<p style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('allTimesIn')+'</p>';
   html+='<div style="overflow-x:auto"><table class="avail-table"><thead><tr><th>Tag</th>';
   players.forEach(p=>{const c=countPlayer(p);html+='<th>'+p+(c.slots>0?'<br><span style="font-size:10px;color:var(--muted);font-weight:400">('+c.slots+'/'+c.days+')</span>':'')+'</th>';});
   html+='</tr></thead><tbody>';
@@ -613,7 +713,7 @@ function selectDoppel(val){selectedDoppel=val;rAdminDoppel();}
 function rSpiele(){
   const matches=buildMatches();
   function tbl(list){
-    let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>Termin (Berlin)</th></tr></thead><tbody>';
+    let t='<table class="match-table"><thead><tr><th>#</th><th>'+S.teams.team1.name+'</th><th></th><th>'+S.teams.team2.name+'</th><th>'+T[lang].appointment+'</th></tr></thead><tbody>';
     list.forEach(m=>{
       const ds=S.matchAssignments[m.id],d=ds?new Date(ds):null;
       const slot=S.matchSlots[m.id];
@@ -625,8 +725,8 @@ function rSpiele(){
     return t+'</tbody></table>';
   }
   document.getElementById("root").innerHTML=hdr("spiele")+'<main class="content">'
-    +'<section class="card"><h2 class="card-title">🏆 Einzel (E1–E8)</h2>'+tbl(matches.filter(m=>m.type==="Einzel"))+'</section>'
-    +'<section class="card"><h2 class="card-title">🤝 Doppel (D1–D4)</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
+    +'<section class="card"><h2 class="card-title">🏆 '+t('singles')+'</h2>'+tbl(matches.filter(m=>m.type==="Einzel"))+'</section>'
+    +'<section class="card"><h2 class="card-title">🤝 '+t('doublesGames')+'</h2>'+tbl(matches.filter(m=>m.type==="Doppel"))+'</section></main>';
 }
 
 rLogin();
