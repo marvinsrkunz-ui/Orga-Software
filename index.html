@@ -186,7 +186,11 @@ function getMatchesByDay(){const days=getPlayDays(),matches=buildMatches(),byDay
 function toast(msg,err){const el=document.getElementById("toast");el.className="toast"+(err?" toast-err":"");el.textContent=msg;el.style.opacity="1";clearTimeout(el._t);el._t=setTimeout(()=>el.style.opacity="0",2800);}
 
 function langBar(){
-  return '<div class="lang-bar">'+Object.keys(L).map(lk=>'<button class="lang-btn'+(lang===lk?" active":"")+'" onclick="setLang(\''+lk+'\')">'+L[lk].n+'</button>').join("")+'</div>';
+  var flags={de:'🇩🇪',en:'🇬🇧',tr:'🇹🇷',es:'🇪🇸',fr:'🇫🇷',bg:'🇧🇬',cs:'🇨🇿',pl:'🇵🇱',hu:'🇭🇺',ro:'🇷🇴'};
+  var names={de:'Deutsch',en:'English',tr:'Türkçe',es:'Español',fr:'Français',bg:'Български',cs:'Čeština',pl:'Polski',hu:'Magyar',ro:'Română'};
+  var opts=Object.keys(L).map(function(lk){return '<option value="'+lk+'"'+(lang===lk?' selected':'')+'>'+flags[lk]+' '+names[lk]+'</option>';}).join('');
+  return '<div style="position:fixed;top:10px;right:12px;z-index:999"><select onchange="setLang(this.value)" style="padding:4px 8px;border-radius:20px;border:1px solid #cccac0;background:#fff;font-size:13px;cursor:pointer">'+opts+'</select></div>';
+}
 }
 
 function hdr(tab){
