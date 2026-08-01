@@ -163,6 +163,7 @@ const DEF = {
 let S=JSON.parse(JSON.stringify(DEF));
 let currentUser=null,currentView="login",loginRole=null,dragSrc=null,selectedSpieler=null,selectedDoppel=null;
 let userTimezone="Europe/Berlin";
+let playerTimezones={}; // { spielername: "Europe/Berlin" }
 
 // Convert Berlin time slot to user's local time for display
 function slotToLocal(slot, dateStr) {
@@ -416,7 +417,7 @@ function rSpielerAvail(){
   if(selectedSpieler){
     const tzOpts2=TIMEZONES.map(tz=>'<option value="'+tz.value+'"'+(userTimezone===tz.value?" selected":"")+">"+tz.label+"</option>").join("");
     html+='<div class="field-row"><label>Deine Zeitzone</label>'
-         +'<select onchange="userTimezone=this.value;rSpielerAvail()" style="width:220px">'+tzOpts2+'</select></div>';
+         +'<select onchange="userTimezone=this.value;playerTimezones[selectedSpieler]=this.value;rSpielerAvail()" style="width:220px">'+tzOpts2+'</select></div>';
     const tzLabel2=TIMEZONES.find(t=>t.value===userTimezone);
     html+='<p style="font-size:12px;color:var(--muted);margin-bottom:12px">⏰ Zeiten werden in <strong>'+(tzLabel2?tzLabel2.label:userTimezone)+'</strong> angezeigt.</p>';
   }
@@ -443,7 +444,13 @@ function rSpielerAvail(){
   html+='</section></main>';
   document.getElementById("root").innerHTML=html;
 }
-function onSpielerSelect(name){selectedSpieler=name;rSpielerAvail();}
+function onSpielerSelect(name){
+  selectedSpieler=name;
+  // Load this player's saved timezone or default to Berlin
+  if(playerTimezones[name]) userTimezone=playerTimezones[name];
+  else userTimezone="Europe/Berlin";
+  rSpielerAvail();
+}
 function toggleSlot(ds,time){
   if(!selectedSpieler)return;
   if(!S.availability[selectedSpieler])S.availability[selectedSpieler]={};
